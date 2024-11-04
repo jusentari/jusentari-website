@@ -1,0 +1,108 @@
+
+
+[153]HELLO! BOOT0 is starting!
+[156]BOOT0 commit : d21a737
+[159]set pll start
+[161]periph0 has been enabled
+[164]set pll end
+[165]board init ok
+[167]DRAM only have internal ZQ!!
+[170]get_pmu_exist() = -1
+[173]ddr_efuse_type: 0x0
+[176][AUTO DEBUG] two rank and full DQ!
+[179]ddr_efuse_type: 0x0
+[183][AUTO DEBUG] rank 0 row = 15
+[186][AUTO DEBUG] rank 0 bank = 8
+[189][AUTO DEBUG] rank 0 page size = 2 KB
+[193][AUTO DEBUG] rank 1 row = 15
+[196][AUTO DEBUG] rank 1 bank = 8
+[199][AUTO DEBUG] rank 1 page size = 2 KB
+[203]rank1 config same as rank0
+[205]DRAM BOOT DRIVE INFO: V0.24
+[208]DRAM CLK = 792 MHz
+[211]DRAM Type = 3 (2:DDR2,3:DDR3)
+[214]DRAMC ZQ value: 0x7b7bfb
+[217]DRAM ODT value: 0x42.
+[219]ddr_efuse_type: 0x0
+[222]DRAM SIZE =1024 M
+[226]DRAM simple test OK.
+[228]dram size =1024
+[230]card no is 0
+[232]sdcard 0 line count 4
+[234][mmc]: mmc driver ver 2021-04-2 16:45
+[243][mmc]: Wrong media type 0x0
+[246][mmc]: ***Try SD card 0***
+[272][mmc]: HSSDR52/SDR25 4 bit
+[275][mmc]: 50000000 Hz
+[277][mmc]: 15193 MB
+[279][mmc]: ***SD/MMC 0 init OK!!!***
+[331]Loading boot-pkg Succeed(index=0).
+[334]Entry_name        = opensbi
+[338]Entry_name        = dtb
+[340]Entry_name        = u-boot
+[344]Adding DRAM info to DTB.
+[347]Jump to second Boot.
+
+OpenSBI v0.9-204-gc9024b561c
+Build time: 2024-10-13 15:18:26 -0400
+Build compiler: gcc version 14.2.0 (GCC)
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Platform Name             : Allwinner D1 NeZha
+Platform Features         : medeleg
+Platform HART Count       : 1
+Platform IPI Device       : aclint-mswi
+Platform Timer Device     : aclint-mtimer @ 24000000Hz
+Platform Console Device   : uart8250
+Platform HSM Device       : ---
+Platform Reboot Device    : sunxi-wdt-reset
+Platform Shutdown Device  : ---
+Firmware Base             : 0x40000000
+Firmware Size             : 284 KB
+Runtime SBI Version       : 0.3
+
+Domain0 Name              : root
+Domain0 Boot HART         : 0
+Domain0 HARTs             : 0*
+Domain0 Region00          : 0x0000000014008000-0x000000001400bfff (I)
+Domain0 Region01          : 0x0000000014000000-0x0000000014007fff (I)
+Domain0 Region02          : 0x0000000040000000-0x000000004007ffff ()
+Domain0 Region03          : 0x0000000000000000-0xffffffffffffffff (R,W,X)
+Domain0 Next Address      : 0x000000004a000000
+Domain0 Next Arg1         : 0x0000000044000000
+Domain0 Next Mode         : S-mode
+Domain0 SysReset          : yes
+
+Boot HART ID              : 0
+Boot HART Domain          : root
+Boot HART ISA             : rv64imafdcvsux
+Boot HART Features        : scounteren,mcounteren,mcountinhibit,time
+Boot HART PMP Count       : 16
+Boot HART PMP Granularity : 2048
+Boot HART PMP Address Bits: 38
+Boot HART MHPM Count      : 0
+Boot HART MIDELEG         : 0x0000000000000222
+Boot HART MEDELEG         : 0x000000000000b109
+
+
+U-Boot 2022.01-17750-gd5c119c132-dirty (Oct 13 2024 - 15:36:23 -0400)
+
+CPU:   rv64imafdc
+Model: Allwinner D1 NeZha
+DRAM:  512 MiB
+Core:  57 devices, 21 uclasses, devicetree: separate
+WDT:   Started watchdog@6011000 with servicing (16s timeout)
+MMC:   mmc@4020000: 0, mmc@4021000: 1
+Loading Environment from nowhere... OK
+In:    serial@2500000
+Out:   serial@2500000
+Err:   serial@2500000
+Net:   Could not get PHY for ethernet@4500000: addr 1
+No ethernet found.

@@ -13,11 +13,13 @@ export class MainComponent implements AfterViewInit {
   cursorSpeed: number = 600;
   animLock: boolean = false;
   // lmao
-  // 
-  barIds:number[] = [4,3,2,1];
+  // tabs
+  tabNames: string[] = ['code', 'games', 'music', 'socials'];
+  tabShortNames: string[] = ['cde', 'gme', 'mus', 'soc'];
+  barIds:number[] = [3,2,1,0];
   selectedBar:number = 5;
   colors: string[] = ["#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000", "#222", "#eee"];
-  chosenId: number = 0;
+  chosenId: number = -1;
   // animation settings
   tabExpandSpeed: number = 400;
   ribbonDelay: number = 800;
@@ -56,8 +58,7 @@ export class MainComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     //(document.getElementById('spline')! as unknown as SVGAnimationElement).beginElement();
     //(document.getElementById('spline2')! as unknown as SVGAnimationElement).beginElement();
-    const tabids: number[] = [1, 2, 3, 4];
-    tabids.forEach(tabId => {
+    this.barIds.forEach(tabId => {
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
         console.log('hovered');
         if(tabId != this.chosenId)
@@ -73,7 +74,7 @@ export class MainComponent implements AfterViewInit {
         this.startAnim(tabId);
         console.log('click');
         let nextTabDelay = 0;
-        if(this.chosenId != 0){
+        if(this.chosenId != -1){
           this.beginAnimation('ribboncontract');
           const oldChosenId = this.chosenId;
           setTimeout(() => this.beginAnimation('contract' + oldChosenId), this.tabContractDelay);
@@ -99,7 +100,7 @@ export class MainComponent implements AfterViewInit {
     }
     this.animLock = true;
     let i = 0;
-    const strings = this.getIntermediateStrings(this.consoleText, '/home/jusentari/' + id + 'test');
+    const strings = this.getIntermediateStrings(this.consoleText, '/home/jusentari/' + this.tabShortNames[id]);
     const observable = interval(this.typeSpeed);
     const subscription = observable.pipe(take(strings.length)).subscribe(x => {
       this.consoleText = strings[i] + '|';

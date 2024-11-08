@@ -10,7 +10,8 @@
             <animate
                 attributeName="height"
                 begin="indefinite"
-                [attr.dur]="id + 's'"
+                to="30"
+                [attr.dur]="'.5s'"
                 by="30"
                 values="0; 30;"
                 keySplines="
@@ -24,9 +25,8 @@
             <animate
                 attributeName="height"
                 begin="indefinite"
-                by="30"
+                [attr.to]="pageHeight"
                 [attr.dur]="tabExpandSpeed / 1000 + 's'"
-                [attr.values]="'0; ' + pageHeight"
                 keySplines="
                     0.1 0.8 0.2 1;"
                 keyTimes="
@@ -55,8 +55,8 @@
           <animate
             attributeName="height"
             begin="indefinite"
+            [attr.to]="(pageHeight - 100)"
             [attr.dur]="ribbonExpandSpeed / 1000 + 's'"
-            [attr.values]="'0; ' + (pageHeight - 100)"
             keySplines="
                 0.1 0.8 0.2 1;"
             keyTimes="
@@ -68,8 +68,8 @@
         <animate
           attributeName="height"
           begin="indefinite"
+          to="0"
           [attr.dur]="ribbonContractSpeed / 1000 + 's'"
-          [attr.values]="(pageHeight - 100) + '; 0'"
           keySplines="
               0.1 0.8 0.2 1;"
           keyTimes="

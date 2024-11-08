@@ -33,7 +33,7 @@ export class MainComponent implements AfterViewInit {
     return Math.atan(thirdOfTabSize/100) * -180/Math.PI;
   }
   // animation settings
-  tabExpandSpeed: number = 400;
+  tabExpandSpeed: number = 800;
   ribbonDelay: number = 800;
   ribbonExpandSpeed: number = 400;
   ribbonContractSpeed: number = 400;
@@ -89,12 +89,12 @@ export class MainComponent implements AfterViewInit {
     this.barIds.forEach(tabId => {
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
         console.log('hovered');
-        if(tabId != this.chosenId && this.pageWidth >= 768)
+        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.animLock)
           this.beginAnimations('expand' + tabId);
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
         console.log('unhovered');
-        if(tabId != this.chosenId && this.pageWidth >= 768){
+        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.animLock){
           this.beginAnimations('contract' + tabId);
         }
       });
@@ -103,7 +103,11 @@ export class MainComponent implements AfterViewInit {
           return;
         }
         this.animLock = true;
-        this.barIds = this.barIds.sort((a, b) => a === tabId ? 9999 : b - a);
+        if(this.pageWidth < 768){
+          this.barIds = this.barIds.sort((a, b) => a === tabId ? 9999 : b - a);
+        } else {
+          this.barIds = this.barIds.sort((a, b) => b - a);
+        }
         this.startAnim(tabId);
         console.log('click');
         let nextTabDelay = 0;

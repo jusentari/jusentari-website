@@ -143,7 +143,7 @@
                 fill="freeze"
             />
           </polygon>
-          <text class="tabText" [style.fill]="colors[6]" [attr.x]="(pageWidth - id * tabSize - (tabSize * .65))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
+          <text class="tabText" [style.fill]="colors[6]" [style.fontSize]="fontSize" [attr.x]="(pageWidth - id * tabSize - (tabSize * .65))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
         </ng-container>
         <rect #ribbon id="ribbon" [attr.y]="pageHeight*.8" [attr.x]="pageWidth" [attr.height]="pageHeight*.1" [attr.width]="tabSize" [attr.fill]="colors[chosenId]">
           <animate
@@ -173,7 +173,6 @@
           fill="freeze"
       />
         </rect>
-        <text x="50" y="62.5" class="consoleText" [style.fill]="colors[6]" pointer-events="none">{{this.consoleText}}</text>
       </svg>
     </div>
     <div [style.height]="'85vh'" [style.background-color]="colors[5]">

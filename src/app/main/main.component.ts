@@ -11,13 +11,14 @@ export class MainComponent implements AfterViewInit {
   pageHeight: number = window.innerHeight;
   // lmao
   // tabs
-  tabNames: string[] = ['socials', 'music', 'games', 'code'];
+  tabNames: string[] = ['social', 'music', 'games', 'code'];
   tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
   barIds:number[] = [3,2,1,0];
   colors: string[] = ["#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000", "#222", "#eee"];
   chosenId: number = -1;
   // tab settings
-  tabPercentageSize = this.pageWidth >= 768 ? 12 : 20;
+  tabPercentageSize = this.pageWidth >= 768 ? 12 : 27.5;
+  fontSize = this.pageWidth >= 768 ? '40px' : '20px';
   _tabSize: number = 150;
   get tabSize(){
     return this.pageWidth * (this.tabPercentageSize / 100.0);
@@ -54,6 +55,7 @@ export class MainComponent implements AfterViewInit {
     this.pageWidth = window.innerWidth;
     this.pageHeight = window.innerHeight;
     this.tabPercentageSize = this.pageWidth >= 768 ? 12 : 20;
+    this.fontSize = this.pageWidth >= 768 ? '40px' : '20px';
   }
 
   ngOnInit(): void {

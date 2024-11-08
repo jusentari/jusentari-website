@@ -1,18 +1,12 @@
-<h2>stuff</h2><br>
-<a routerLink="/one-pixel">one pixel</a><br>
-<h2>socials</h2><br>
-<a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
-<a href="https://github.com/jusentari" rel=me>github</a><br>
+<div width="100%">
 
-jusentari@gmail.com
-
-<div>
     <div [style.height]="'100px'" [style.background-color]="colors[2]">
-      <svg viewbox="0 0 400 100" overflow="visible">
+    <!--use this for desktop-->
+      <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth >= 768">
         <ng-container *ngFor="let id of barIds">
              <!-- might need to scale this differently based on whether user is on mobile -->
-          <polygon id="tab{{id}}" points="0,100 50,0 200,0 150,100" [style.fill]="colors[id]" [attr.transform]="'translate(' + ((pageWidth - id * 150) - 150 ) + ',0)'"></polygon>
-          <rect y="100" width="150" height="0" [style.fill]="colors[id]" [attr.transform]="'skewX(-26.565), translate(' + ((pageWidth - id * 150) - 100 ) + ',0)'">
+          <polygon id="tab{{id}}" [attr.points]="getPolygon()" [style.fill]="colors[id]" [attr.transform]="'translate(' + ((pageWidth - id * tabSize) - tabSize ) + ',0)'"></polygon>
+          <rect y="100" [attr.width]="tabSize" height="0" [style.fill]="colors[id]" [attr.transform]="'skewX(' + getSkew() + '), translate(' + ((pageWidth - id * tabSize) - (tabSize * .6666666) ) + ',0)'">
             <animate
                 attributeName="height"
                 begin="indefinite"
@@ -55,14 +49,14 @@ jusentari@gmail.com
                 fill="freeze"
             />
           </rect>
-          <text class="tabText" [style.fill]="colors[6]" [attr.x]="(pageWidth - id * 150 - 50)" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
+          <text class="tabText" [style.fill]="colors[6]" [attr.x]="(pageWidth - id * tabSize - (tabSize * .65))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
         </ng-container>
-        <rect #ribbon y="-1000" x="100" height="0" width="150" transform="scale(1,-1)" [attr.fill]="colors[chosenId]">
+        <rect #ribbon [attr.y]="-pageHeight" [attr.x]="pageWidth*.05" height="0" [attr.width]="tabSize" transform="scale(1,-1)" [attr.fill]="colors[chosenId]">
           <animate
             attributeName="height"
             begin="indefinite"
             [attr.dur]="ribbonExpandSpeed / 1000 + 's'"
-            values="0; 1000;"
+            [attr.values]="'0; ' + (pageHeight - 100)"
             keySplines="
                 0.1 0.8 0.2 1;"
             keyTimes="
@@ -75,7 +69,71 @@ jusentari@gmail.com
           attributeName="height"
           begin="indefinite"
           [attr.dur]="ribbonContractSpeed / 1000 + 's'"
-          values="1000; 0"
+          [attr.values]="(pageHeight - 100) + '; 0'"
+          keySplines="
+              0.1 0.8 0.2 1;"
+          keyTimes="
+              0;1"
+          calcMode="spline"
+          id="ribboncontract"
+          fill="freeze"
+      />
+        </rect>
+        <text x="50" y="62.5" class="consoleText" [style.fill]="colors[6]" pointer-events="none">{{this.consoleText}}</text>
+      </svg>
+      <!--use this for mobile-->
+      <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth < 768">
+        <ng-container *ngFor="let id of barIds">
+             <!-- might need to scale this differently based on whether user is on mobile -->
+          <polygon id="tab{{id}}" [attr.points]="getPolygon()" [style.fill]="colors[id]" [attr.transform]="'translate(' + ((pageWidth - id * tabSize) - tabSize ) + ',0)'">
+            <animate
+                attributeName="points"
+                begin="indefinite"
+                [attr.dur]="tabExpandSpeed / 1000 + 's'"
+                [attr.values]="getPolygon() + '; 0,100 0,0 ' + pageWidth + ',0 ' + pageWidth + ',100;'"
+                keySplines="
+                    0.1 0.8 0.2 1;"
+                keyTimes="
+                    0;1"
+                calcMode="spline"
+                [attr.id]="'fullExpand'+id"
+                fill="freeze"
+            />
+            <animate
+                attributeName="points"
+                begin="indefinite"
+                [attr.dur]="tabExpandSpeed / 1000 + 's'"
+                [attr.values]="pageWidth + ', 0' + pageWidth + ',100 ' + ' 0, 0 0,100;' + getPolygon() + ';'"
+                keySplines="
+                    0.1 0.8 0.2 1;"
+                keyTimes="
+                    0;1"
+                calcMode="spline"
+                [attr.id]="'fullExpand'+id"
+                fill="freeze"
+            />
+          </polygon>
+          <text class="tabText" [style.fill]="colors[6]" [attr.x]="(pageWidth - id * tabSize - (tabSize * .65))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
+        </ng-container>
+        <rect #ribbon [attr.y]="-pageHeight" [attr.x]="pageWidth*.05" height="0" [attr.width]="tabSize" transform="scale(1,-1)" [attr.fill]="colors[chosenId]">
+          <animate
+            attributeName="height"
+            begin="indefinite"
+            [attr.dur]="ribbonExpandSpeed / 1000 + 's'"
+            [attr.values]="'0; ' + (pageHeight - 100)"
+            keySplines="
+                0.1 0.8 0.2 1;"
+            keyTimes="
+                0;1"
+            calcMode="spline"
+            id="ribbonexpand"
+            fill="freeze"
+        />
+        <animate
+          attributeName="height"
+          begin="indefinite"
+          [attr.dur]="ribbonContractSpeed / 1000 + 's'"
+          [attr.values]="(pageHeight - 100) + '; 0'"
           keySplines="
               0.1 0.8 0.2 1;"
           keyTimes="
@@ -89,9 +147,14 @@ jusentari@gmail.com
       </svg>
     </div>
     <div [style.height]="'85vh'" [style.background-color]="colors[5]">
-      <div [style.padding]="'40px'" [style.color]="colors[6]">text! test /</div>
-      <ng-container *ngFor="let id of barIds">
-        <button (click)="startAnim(id)">press for anim {{id}}</button>
-      </ng-container>
+      <div [style.padding]="'40px'" [style.color]="colors[6]">under!! construction!!!</div>
     </div>
   </div>
+  <h2>stuff</h2><br>
+  <a routerLink="/one-pixel">one pixel</a><br>
+  <h2>socials</h2><br>
+  <a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
+  <a href="https://github.com/jusentari" rel=me>github</a><br>
+  
+  jusentari@gmail.com
+  

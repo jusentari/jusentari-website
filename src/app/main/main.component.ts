@@ -8,18 +8,28 @@ import { interval, take, timeout } from 'rxjs';
 })
 export class MainComponent implements AfterViewInit {
   pageWidth: number = window.innerWidth;
-  consoleText: string = '/home/jusentari';
-  typeSpeed: number = 50;
-  cursorSpeed: number = 600;
-  animLock: boolean = false;
+  pageHeight: number = window.innerHeight;
   // lmao
   // tabs
-  tabNames: string[] = ['code', 'games', 'music', 'socials'];
-  tabShortNames: string[] = ['cde', 'gme', 'mus', 'soc'];
+  tabNames: string[] = ['socials', 'music', 'games', 'code'];
+  tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
   barIds:number[] = [3,2,1,0];
-  selectedBar:number = 5;
   colors: string[] = ["#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000", "#222", "#eee"];
   chosenId: number = -1;
+  // tab settings
+  tabPercentageSize = this.pageWidth >= 768 ? 12 : 20;
+  _tabSize: number = 150;
+  get tabSize(){
+    return this.pageWidth * (this.tabPercentageSize / 100.0);
+  }
+  getPolygon(){
+    const thirdOfTabSize = this.tabSize*0.33333333333;
+    return `0,100 ${thirdOfTabSize},0 ${thirdOfTabSize*4},0 ${this.tabSize},100 `
+  }
+  getSkew(){
+    const thirdOfTabSize = this.tabSize*0.33333333333;
+    return Math.atan(thirdOfTabSize/100) * -180/Math.PI;
+  }
   // animation settings
   tabExpandSpeed: number = 400;
   ribbonDelay: number = 800;
@@ -28,6 +38,12 @@ export class MainComponent implements AfterViewInit {
   tabContractDelay: number = 400;
   tabContractSpeed: number = 800;
   nextTabDelay: number = 400;
+  // terminal settings
+  consoleText: string = '/home/jusentari';
+  typeSpeed: number = 50;
+  cursorSpeed: number = 600;
+
+  consoleTyping: boolean = false;
   constructor() { }
 
   @HostListener('window:resize', ['$event'])
@@ -36,13 +52,15 @@ export class MainComponent implements AfterViewInit {
   }
   updateWindowSize(){
     this.pageWidth = window.innerWidth;
+    this.pageHeight = window.innerHeight;
+    this.tabPercentageSize = this.pageWidth >= 768 ? 12 : 20;
   }
 
   ngOnInit(): void {
     const observable = interval(this.cursorSpeed);
     // TODO: start this subscription on type finish, as to not have it flash quickly after ending the typing
     const subscription = observable.subscribe(x => {
-      if(!this.animLock){
+      if(!this.consoleTyping){
         if(this.consoleText.includes('|'))
           this.consoleText = this.consoleText.substring(0, this.consoleText.length - 1);
         else
@@ -95,10 +113,10 @@ export class MainComponent implements AfterViewInit {
   }
 
   startAnim(id: number): void {
-    if(this.animLock){
+    if(this.consoleTyping){
       return;
     }
-    this.animLock = true;
+    this.consoleTyping = true;
     let i = 0;
     const strings = this.getIntermediateStrings(this.consoleText, '/home/jusentari/' + this.tabShortNames[id]);
     const observable = interval(this.typeSpeed);
@@ -107,20 +125,7 @@ export class MainComponent implements AfterViewInit {
       i++;
     });
     setTimeout(() => {
-      /*
-      for (let i = 1; i <= 4; i++) {
-        var elementName = null;
-        if(i >= id && i < this.selectedBar)
-          elementName = "barRight";
-        if(i >= this.selectedBar && i < id)
-          elementName = "barLeft";  
-        console.log(elementName);
-        if(elementName){
-          (document.getElementById(elementName + i)! as unknown as SVGAnimationElement).beginElement();
-        }
-      }*/
-      this.selectedBar = id;
-      this.animLock = false;
+      this.consoleTyping = false;
     }, this.typeSpeed * strings.length)
   }
 

@@ -18,7 +18,7 @@
                 keyTimes="
                     0;1"
                 calcMode="spline"
-                [attr.id]="'expand'+id"
+                [attr.class]="'expand'+id"
                 fill="freeze"
             />
             <animate
@@ -32,7 +32,7 @@
                 keyTimes="
                     0;1"
                 calcMode="spline"
-                [attr.id]="'fullExpand'+id"
+                [attr.class]="'fullExpand'+id"
                 fill="freeze"
             />
             <animate
@@ -45,7 +45,7 @@
                 keyTimes="
                     0;1"
                 calcMode="spline"
-                [attr.id]="'contract'+id"
+                [attr.class]="'contract'+id"
                 fill="freeze"
             />
           </rect>
@@ -62,7 +62,7 @@
             keyTimes="
                 0;1"
             calcMode="spline"
-            id="ribbonexpand"
+            class="ribbonexpand"
             fill="freeze"
         />
         <animate
@@ -75,7 +75,7 @@
           keyTimes="
               0;1"
           calcMode="spline"
-          id="ribboncontract"
+          class="ribboncontract"
           fill="freeze"
       />
         </rect>
@@ -96,50 +96,80 @@
                 keyTimes="
                     0;1"
                 calcMode="spline"
-                [attr.id]="'fullExpand'+id"
+                [attr.class]="'fullExpand'+id"
+                fill="freeze"
+            />
+            <animateTransform
+                attributeName="transform"
+                attributeType="XML"
+                type="translate"
+                begin="indefinite"
+                [attr.dur]="tabExpandSpeed / 1000 + 's'"
+                [attr.values]="((pageWidth - id * tabSize) - tabSize ) + ',0; 0,0;'"
+                keySplines="
+                    0.1 0.8 0.2 1;"
+                keyTimes="
+                    0;1"
+                calcMode="spline"
+                [attr.class]="'fullExpand'+id"
                 fill="freeze"
             />
             <animate
                 attributeName="points"
                 begin="indefinite"
                 [attr.dur]="tabExpandSpeed / 1000 + 's'"
-                [attr.values]="pageWidth + ', 0' + pageWidth + ',100 ' + ' 0, 0 0,100;' + getPolygon() + ';'"
+                [attr.values]="'0,100 0,0 ' + pageWidth + ',0 ' + pageWidth + ',100; ' + getPolygon() + ';'"
                 keySplines="
                     0.1 0.8 0.2 1;"
                 keyTimes="
                     0;1"
                 calcMode="spline"
-                [attr.id]="'fullExpand'+id"
+                [attr.class]="'contract'+id"
+                fill="freeze"
+            />
+            <animateTransform
+                attributeName="transform"
+                attributeType="XML"
+                type="translate"
+                begin="indefinite"
+                [attr.dur]="tabExpandSpeed / 1000 + 's'"
+                [attr.values]="'0,0; ' + ((pageWidth - id * tabSize) - tabSize ) + ',0;'"
+                keySplines="
+                    0.1 0.8 0.2 1;"
+                keyTimes="
+                    0;1"
+                calcMode="spline"
+                [attr.class]="'contract'+id"
                 fill="freeze"
             />
           </polygon>
           <text class="tabText" [style.fill]="colors[6]" [attr.x]="(pageWidth - id * tabSize - (tabSize * .65))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
         </ng-container>
-        <rect #ribbon [attr.y]="-pageHeight" [attr.x]="pageWidth*.05" height="0" [attr.width]="tabSize" transform="scale(1,-1)" [attr.fill]="colors[chosenId]">
+        <rect #ribbon id="ribbon" [attr.y]="pageHeight*.8" [attr.x]="pageWidth" [attr.height]="pageHeight*.1" [attr.width]="tabSize" [attr.fill]="colors[chosenId]">
           <animate
-            attributeName="height"
+            attributeName="x"
             begin="indefinite"
             [attr.dur]="ribbonExpandSpeed / 1000 + 's'"
-            [attr.values]="'0; ' + (pageHeight - 100)"
+            [attr.values]="pageWidth + '; ' + pageWidth * .8 + ';'"
             keySplines="
                 0.1 0.8 0.2 1;"
             keyTimes="
                 0;1"
             calcMode="spline"
-            id="ribbonexpand"
+            class="ribbonexpand"
             fill="freeze"
         />
         <animate
-          attributeName="height"
+          attributeName="x"
           begin="indefinite"
           [attr.dur]="ribbonContractSpeed / 1000 + 's'"
-          [attr.values]="(pageHeight - 100) + '; 0'"
+          [attr.values]="pageWidth * .8 + '; ' + pageWidth + ';'"
           keySplines="
               0.1 0.8 0.2 1;"
           keyTimes="
               0;1"
           calcMode="spline"
-          id="ribboncontract"
+          class="ribboncontract"
           fill="freeze"
       />
         </rect>

@@ -73,41 +73,59 @@ export class MainComponent implements AfterViewInit {
     (document.getElementById(animationId)! as unknown as SVGAnimationElement).beginElement();
   }
 
+  beginAnimations(animationClass: string){
+    const elements = document.getElementsByClassName(animationClass);
+    for(let i = 0; i < elements.length; i++){
+      console.log(elements.item(i));
+      const element = elements.item(i);
+      (element! as unknown as SVGAnimationElement).beginElement();
+    }
+  }
+
   ngAfterViewInit(): void {
     //(document.getElementById('spline')! as unknown as SVGAnimationElement).beginElement();
     //(document.getElementById('spline2')! as unknown as SVGAnimationElement).beginElement();
     this.barIds.forEach(tabId => {
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
         console.log('hovered');
-        if(tabId != this.chosenId)
-          this.beginAnimation('expand' + tabId);
+        if(tabId != this.chosenId && this.pageWidth >= 768)
+          this.beginAnimations('expand' + tabId);
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
         console.log('unhovered');
-        if(tabId != this.chosenId){
-          this.beginAnimation('contract' + tabId);
+        if(tabId != this.chosenId && this.pageWidth >= 768){
+          this.beginAnimations('contract' + tabId);
         }
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('click', (event) => {
+        this.barIds = this.barIds.sort((a, b) => a === tabId ? 9999 : b - a);
         this.startAnim(tabId);
         console.log('click');
         let nextTabDelay = 0;
         if(this.chosenId != -1){
-          this.beginAnimation('ribboncontract');
+          this.beginAnimations('ribboncontract');
           const oldChosenId = this.chosenId;
-          setTimeout(() => this.beginAnimation('contract' + oldChosenId), this.tabContractDelay);
+          setTimeout(() => this.beginAnimations('contract' + oldChosenId), this.tabContractDelay);
           nextTabDelay = this.nextTabDelay;
         }
         setTimeout(() => {
           this.chosenId = tabId;
         }, this.ribbonContractSpeed);
         setTimeout(() => {
-          this.beginAnimation('fullExpand' + tabId);
-          setTimeout(() => this.beginAnimation('ribbonexpand'), this.ribbonDelay);
+          this.beginAnimations('fullExpand' + tabId);
+          setTimeout(() => this.beginAnimations('ribbonexpand'), this.ribbonDelay);
         }, nextTabDelay);
       });
-      (document.getElementById('contract' + tabId)! as unknown as SVGAnimationElement).addEventListener('animationend', () => {
-        console.log('Animation ended');
+      (document.getElementById('ribbon')! as unknown as SVGRectElement).addEventListener('click', (event) => {
+        this.startAnim(tabId);
+        console.log('click');
+        const oldChosenId = this.chosenId;
+        this.beginAnimations('contract' + oldChosenId);
+        this.beginAnimations('ribboncontract');
+        setTimeout(() => {
+          this.barIds = this.barIds.sort((a, b) => b - a);
+          this.chosenId = -1;
+        }, this.tabContractSpeed);
       });
     });
   }

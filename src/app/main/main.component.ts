@@ -9,6 +9,7 @@ import { interval, take, timeout } from 'rxjs';
 export class MainComponent implements AfterViewInit {
   pageWidth: number = window.innerWidth;
   pageHeight: number = window.innerHeight;
+  animLock: boolean = false;
   // lmao
   // tabs
   tabNames: string[] = ['social', 'music', 'games', 'code'];
@@ -78,15 +79,13 @@ export class MainComponent implements AfterViewInit {
   beginAnimations(animationClass: string){
     const elements = document.getElementsByClassName(animationClass);
     for(let i = 0; i < elements.length; i++){
-      console.log(elements.item(i));
+      console.log('playing anim ' + animationClass);
       const element = elements.item(i);
       (element! as unknown as SVGAnimationElement).beginElement();
     }
   }
 
   ngAfterViewInit(): void {
-    //(document.getElementById('spline')! as unknown as SVGAnimationElement).beginElement();
-    //(document.getElementById('spline2')! as unknown as SVGAnimationElement).beginElement();
     this.barIds.forEach(tabId => {
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
         console.log('hovered');
@@ -100,6 +99,10 @@ export class MainComponent implements AfterViewInit {
         }
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('click', (event) => {
+        if(this.animLock){
+          return;
+        }
+        this.animLock = true;
         this.barIds = this.barIds.sort((a, b) => a === tabId ? 9999 : b - a);
         this.startAnim(tabId);
         console.log('click');
@@ -115,19 +118,24 @@ export class MainComponent implements AfterViewInit {
         }, this.ribbonContractSpeed);
         setTimeout(() => {
           this.beginAnimations('fullExpand' + tabId);
-          setTimeout(() => this.beginAnimations('ribbonexpand'), this.ribbonDelay);
+          setTimeout(() => {
+            this.beginAnimations('ribbonexpand');
+            this.animLock = false;
+          }, this.ribbonDelay);
         }, nextTabDelay);
       });
       (document.getElementById('ribbon')! as unknown as SVGRectElement).addEventListener('click', (event) => {
-        this.startAnim(tabId);
-        console.log('click');
-        const oldChosenId = this.chosenId;
-        this.beginAnimations('contract' + oldChosenId);
-        this.beginAnimations('ribboncontract');
-        setTimeout(() => {
-          this.barIds = this.barIds.sort((a, b) => b - a);
-          this.chosenId = -1;
-        }, this.tabContractSpeed);
+        if(this.pageWidth < 768){
+          this.startAnim(tabId);
+          console.log('click');
+          const oldChosenId = this.chosenId;
+          this.beginAnimations('contract' + oldChosenId);
+          this.beginAnimations('ribboncontract');
+          setTimeout(() => {
+            this.barIds = this.barIds.sort((a, b) => b - a);
+            this.chosenId = -1;
+          }, this.tabContractSpeed);
+        }
       });
     });
   }

@@ -57,6 +57,9 @@ export class MainComponent implements AfterViewInit {
     this.pageHeight = window.innerHeight;
     this.tabPercentageSize = this.pageWidth >= 768 ? 12 : 20;
     this.fontSize = this.pageWidth >= 1250 ? '40px' : (this.pageWidth >= 1050 ? '30px' : this.pageWidth >= 768 ? '25px' : '20px');
+    if((this.pageWidth < 768 && this.tabPercentageSize == 12) || (this.pageWidth >= 768 && this.tabPercentageSize == 20)){
+      setTimeout(() => this.ngAfterViewInit(), 1000);
+    }
   }
 
   ngOnInit(): void {
@@ -66,8 +69,6 @@ export class MainComponent implements AfterViewInit {
       if(!this.consoleTyping){
         if(this.consoleText.includes('|'))
           this.consoleText = this.consoleText.substring(0, this.consoleText.length - 1);
-        else
-          this.consoleText += '|';
       }
     });
   }

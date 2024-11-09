@@ -1,6 +1,7 @@
 <div width="100%">
 
     <div [style.height]="'100px'" [style.background-color]="colors[4]">
+        <input class="consoleText" [style.background-color]="colors[4]"  [style.color]="colors[6]" [(ngModel)]="consoleText" autofocus *ngIf="pageWidth >= 768" />
     <!--use this for desktop-->
       <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth >= 768">
         <ng-container *ngFor="let id of barIds">

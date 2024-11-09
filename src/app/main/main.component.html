@@ -3,7 +3,7 @@
     <div [style.height]="'100px'" [style.background-color]="colors[4]">
         <input class="consoleText" [style.background-color]="colors[4]"  [style.color]="colors[6]" [(ngModel)]="consoleText" autofocus *ngIf="pageWidth >= 768" />
     <!--use this for desktop-->
-      <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth >= 768">
+      <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth >= 768" position="absolute" style="z-index: -1">
         <ng-container *ngFor="let id of barIds">
              <!-- might need to scale this differently based on whether user is on mobile -->
           <polygon id="tab{{id}}" [attr.points]="getPolygon()" [style.fill]="colors[id]" [attr.transform]="'translate(' + ((pageWidth - id * tabSize) - tabSize ) + ',0)'"></polygon>
@@ -80,8 +80,7 @@
           fill="freeze"
       />
         </rect>
-        <text x="50" y="62.5" class="consoleText" [style.fill]="colors[6]" pointer-events="none">{{this.consoleText}}</text>
-      </svg>
+    </svg>
       <!--use this for mobile-->
       <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth < 768">
         <ng-container *ngFor="let id of barIds">
@@ -176,15 +175,38 @@
         </rect>
       </svg>
     </div>
-    <div [style.height]="'85vh'" [style.background-color]="colors[5]">
-      <div [style.padding]="'40px'" [style.color]="colors[6]">under!! construction!!!</div>
+    <div class="bottom" [style.height]="'calc(100vh - 100px)'" [style.background-color]="colors[5]">
+        <ng-container [ngSwitch]="chosenId" style="color: #ddd">
+            <ng-container *ngSwitchCase="-1">
+                <div style="color: #ddd">
+                    welcome to my website! it is currently under construction. click on the tabs up top to see my various projects :)
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="0">
+                <div style="color: #ddd; padding: 30px; z-index: 1" [style.backgroundColor]="colors[1]" position="relative">
+                    <a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
+                    <a href="https://github.com/jusentari" rel=me>github</a><br>
+                    email: jusentari@gmail.com<br>
+                    (idk why tha z-index isn't working)
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="1">
+                <div style="color: #ddd">
+                    music
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="2">
+                <div style="color: #ddd">
+                    games
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="3">
+                <div style="color: #ddd; padding-left: 110px;">
+                    <h2>stuff</h2><br>
+                    <a routerLink="/one-pixel">one pixel</a><br>
+                </div>
+            </ng-container>
+        </ng-container>
     </div>
+
   </div>
-  <h2>stuff</h2><br>
-  <a routerLink="/one-pixel">one pixel</a><br>
-  <h2>socials</h2><br>
-  <a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
-  <a href="https://github.com/jusentari" rel=me>github</a><br>
-  
-  jusentari@gmail.com
-  

@@ -19,6 +19,12 @@
 .topBar {
   width: 100%;
 }
+
+.bottom {
+  min-height: calc(100vh - 100px);
+  padding: 30px;
+}
+
 .consoleText {
   border: none;
   outline: none;

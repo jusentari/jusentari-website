@@ -41,7 +41,7 @@ export class MainComponent implements AfterViewInit {
   tabContractSpeed: number = 800;
   nextTabDelay: number = 400;
   // terminal settings
-  consoleText: string = '/home/jusentari';
+  consoleText: string = '> cd /home/jusentari';
   typeSpeed: number = 50;
   cursorSpeed: number = 600;
 
@@ -56,7 +56,7 @@ export class MainComponent implements AfterViewInit {
     this.pageWidth = window.innerWidth;
     this.pageHeight = window.innerHeight;
     this.tabPercentageSize = this.pageWidth >= 768 ? 12 : 20;
-    this.fontSize = this.pageWidth >= 768 ? '40px' : '20px';
+    this.fontSize = this.pageWidth >= 1250 ? '40px' : (this.pageWidth >= 1050 ? '30px' : this.pageWidth >= 768 ? '25px' : '20px');
   }
 
   ngOnInit(): void {
@@ -89,17 +89,17 @@ export class MainComponent implements AfterViewInit {
     this.barIds.forEach(tabId => {
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
         console.log('hovered');
-        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.animLock)
+        if(tabId != this.chosenId && this.pageWidth >= 768)
           this.beginAnimations('expand' + tabId);
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
         console.log('unhovered');
-        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.animLock){
+        if(tabId != this.chosenId && this.pageWidth >= 768){
           this.beginAnimations('contract' + tabId);
         }
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('click', (event) => {
-        if(this.animLock){
+        if(this.animLock || tabId === this.chosenId){
           return;
         }
         this.animLock = true;
@@ -150,7 +150,7 @@ export class MainComponent implements AfterViewInit {
     }
     this.consoleTyping = true;
     let i = 0;
-    const strings = this.getIntermediateStrings(this.consoleText, '/home/jusentari/' + this.tabShortNames[id]);
+    const strings = this.getIntermediateStrings(this.consoleText, '> cd /home/jusentari/' + this.tabShortNames[id]);
     const observable = interval(this.typeSpeed);
     const subscription = observable.pipe(take(strings.length)).subscribe(x => {
       this.consoleText = strings[i] + '|';

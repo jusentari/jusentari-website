@@ -93,8 +93,8 @@ export class MainComponent implements AfterViewInit {
       (document.getElementById('expand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
         this.isAnimPlaying['expand' + tabId] = false;
       });
-      (document.getElementById('contract' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
-        this.isAnimPlaying['contract' + tabId] = false;
+      (document.getElementById('fullContract' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+        this.isAnimPlaying['fullContract' + tabId] = false;
       });
       (document.getElementById('fullExpand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
         this.isAnimPlaying['fullExpand' + tabId] = false;
@@ -104,7 +104,7 @@ export class MainComponent implements AfterViewInit {
           this.beginAnimations('expand' + tabId);
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
-        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.isAnimPlaying['fullExpand' + tabId]){
+        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.isAnimPlaying['fullExpand' + tabId] && !this.isAnimPlaying['fullContract' + tabId]){
           this.beginAnimations('contract' + tabId); 
         }
       });
@@ -123,7 +123,7 @@ export class MainComponent implements AfterViewInit {
         if(this.chosenId != -1){
           this.beginAnimations('ribboncontract');
           const oldChosenId = this.chosenId;
-          setTimeout(() => this.beginAnimations('contract' + oldChosenId), this.tabContractDelay);
+          setTimeout(() => this.beginAnimations('fullContract' + oldChosenId), this.tabContractDelay);
           nextTabDelay = this.nextTabDelay;
         }
         setTimeout(() => {

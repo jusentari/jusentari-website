@@ -2,7 +2,7 @@
     <div [style.height]="'100px'" [style.background-color]="colors[4]">
         <input class="consoleText" [style.background-color]="colors[4]"  [style.color]="colors[6]" [(ngModel)]="consoleText" autofocus *ngIf="pageWidth >= 768" />
     <!--use this for desktop-->
-      <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth >= 768" position="absolute" style="z-index: -1">
+      <svg [attr.viewbox]="'0 0 ' + pageWidth + ' 100'" overflow="visible" *ngIf="pageWidth >= 768" position="absolute" style="z-index: -1">
         <ng-container *ngFor="let id of barIds">
              <!-- might need to scale this differently based on whether user is on mobile -->
           <polygon id="tab{{id}}" [attr.points]="getPolygon()" [style.fill]="colors[id]" [attr.transform]="'translate(' + ((pageWidth - id * tabSize) - tabSize ) + ',0)'"></polygon>
@@ -49,6 +49,20 @@
                 calcMode="spline"
                 [attr.id]="'contract'+id"
                 [attr.class]="'contract'+id"
+                fill="freeze"
+            />
+            <animate
+                attributeName="height"
+                begin="indefinite"
+                to="0"
+                [attr.dur]="tabContractSpeed / 1000 + 's'"
+                keySplines="
+                    0.1 0.8 0.2 1;"
+                keyTimes="
+                    0;1"
+                calcMode="spline"
+                [attr.id]="'fullContract'+id"
+                [attr.class]="'fullContract'+id"
                 fill="freeze"
             />
           </rect>

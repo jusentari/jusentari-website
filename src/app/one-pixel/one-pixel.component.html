@@ -1,7 +1,7 @@
-<div style="text-align: center; max-width: 600px; margin: auto">
+<div style="text-align: center; max-width: 600px; margin: auto" class="h-entry">
     <h1>one pixel</h1>
     <p>
-        <img src="../assets/uconsole.jpg" alt="as you can see, no pixels here">
+        <img src="../assets/one-pixel/uconsole.jpg" alt="as you can see, no pixels here">
         i got this funny thing in the mail about a month ago and i had one plan for it.
         port my extremely basic "operating system" AlpacOS to it (which i will hopefully write another post about).
         i initially wrote it in x86 but i quickly realised i wanted to port it to risc-v after seeing this thing online.
@@ -25,14 +25,14 @@
     <h2>r01/d1</h2>
     <p>
         this is the brain of the uconsole. there are others but this one is the only risc-v core available.
-        <img src="../../assets/r01.png" alt="uconsole r01">(<a
+        <img src="../../assets/one-pixel/r01.png" alt="uconsole r01">(<a
             href="https://www.clockworkpi.com/product-page/copy-of-clockworkpi-core-r-01">source</a>)
         <br>
         the big square in the middle is the allwinner d1, my partner in crime for the last month.
         <br>
         to be honest, i didn't have a real path to that one pixel at this point so i kinda just messed around with what
         i had. the uconsole came with a microsd card that booted into linux though, so i had something to start with.
-        <img src="../../assets/uconsole_linux.jpg">
+        <img src="../../assets/one-pixel/uconsole_linux.jpg">
 
         <a target="_blank" rel="noopener noreferrer" href="https://linux-sunxi.org/D1">this website</a> has been a crucial resource this whole time.
         they host a <a target="_blank" rel="noopener noreferrer" href="http://dl.linux-sunxi.org/D1/SDK">mirror</a> of the allwinner sdk (which i tried to get access to, but the whole website was in chinese) and link to the <a target="_blank" rel="noopener noreferrer" href="https://github.com/DongshanPI/Awesome_RISCV-AllwinnerD1/blob/master/Tina-SDK/Hardware%E7%A1%AC%E4%BB%B6%E7%B1%BB%E6%96%87%E6%A1%A3/%E8%8A%AF%E7%89%87%E6%89%8B%E5%86%8C/D1-H_User%20Manual_V1.0.pdf">user manual</a>
@@ -73,22 +73,22 @@
         bootloader part (pre-GRUB)
 
         <br>
-        <img src="../../assets/Boot_order_allwinner_nezha_grub.png">(<a
+        <img src="../../assets/one-pixel/Boot_order_allwinner_nezha_grub.png">(<a
             href="https://fedoraproject.org/wiki/Architectures/RISC-V/Allwinner">source</a>)
             <br>
         when building the OpenSBI repo, i hit this error:
-        <img src="../../assets/opensbi_error.png">
+        <img src="../../assets/one-pixel/opensbi_error.png">
         which i fixed by adding "_zifencei" to a line in the Makefile (found out where to do this because of <a target="_blank" rel="noopener noreferrer" href="https://www.sifive.com/blog/all-aboard-part-1-compiler-args">this insightful series</a> from sifive):
-        <img src="../../assets/zifencei.png">
+        <img src="../../assets/one-pixel/zifencei.png">
         MMC Controller Host Support" is under "Device Drivers" in the menu config (also make sure your actual terminal is large enough to run menuconfig)<br>
         when building u-boot i ran into a few issues, the first one was this version error:
-        <img src="../../assets/version_error.png">
+        <img src="../../assets/one-pixel/version_error.png">
         which i had to remove a line in u-boot/scripts/dtc/pylibfdt/Makefile to make sure the version numbers were compatible
-        <img src="../../assets/python_version_fix.png">
+        <img src="../../assets/one-pixel/python_version_fix.png">
         the second one was this error:
-        <img src="../../assets/zicsr_error.png">
+        <img src="../../assets/one-pixel/zicsr_error.png">
         which i fixed by adding "_zifencei_zicsr" to a line in u-boot/arch/riscv/Makefile:
-        <img src="../../assets/zicsr_fix.png">
+        <img src="../../assets/one-pixel/zicsr_fix.png">
 
         at this point, i had a machine that would... start up and not do anything. the main trick though, was that if i gave this bootloader the same boot commands and linux kernel as
         the included sd card, it would boot! successfully! which was crazy to me. it meant my bootloader was actually
@@ -100,17 +100,17 @@
         so after many hours of trial and error, trying to get anything out of the screen with my own code, i tried another route. there
         are some exposed UART pins inside the uconsole that are... not the easiest to get to
         <br>
-        <img src="../../assets/uconsole_open.jpg" alt="no pixels here either???">
-        <img src="../../assets/empty_connector.webp" alt="GPIO 32 and GPIO 33 highlighted">
+        <img src="../../assets/one-pixel/uconsole_open.jpg" alt="no pixels here either???">
+        <img src="../../assets/one-pixel/empty_connector.webp" alt="GPIO 32 and GPIO 33 highlighted">
         <br>
         they are pins GPIO 32 (TX) and GPIO 33 (RX)
         <br>
-        <img src="../../assets/uconsole_mini_pcie.png">(<a
+        <img src="../../assets/one-pixel/uconsole_mini_pcie.png">(<a
             href="https://github.com/clockworkpi/DevTerm/blob/main/Schematics/clockwork_Mainboard_V3.14_Schematic.pdf">source</a>)
         <br>
         i used a uart -> usb adapter and initially read the boot log just by touching a wire to the TX pin on the mini
         pcie port. 
-        i got lots of helpful data out of this (<a target="_blank" rel="noopener noreferrer" href="../../assets/raw_opensbi_output.txt">raw data</a>) and finally understood what was going on inside the device
+        i got lots of helpful data out of this (<a target="_blank" rel="noopener noreferrer" href="../../assets/one-pixel/raw_opensbi_output.txt">raw data</a>) and finally understood what was going on inside the device
         even though the screen was totally dark.
     </p>
     <h2>getting a response</h2>
@@ -121,7 +121,7 @@
         <br>
         that gave me this
         <br>
-        <img src="../../assets/hello_world.png">
+        <img src="../../assets/one-pixel/hello_world.png">
         <br>
         (although i don't know why the executable is so large)
     </p>
@@ -137,7 +137,7 @@
             <br>
             THIS BEAUTIFUL CREATION is my serial communicator.
             <br>
-            <img src="../../assets/ratchet.webp">
+            <img src="../../assets/one-pixel/ratchet.webp">
             <br>
             weep your tears of ecstacy
             <br>
@@ -152,7 +152,7 @@
         <p>
         now that i had a shell with u-boot, i could start interacting with the computer a little bit more. i saw this entry in the device tree from that patch and got interested...
         <br>
-        <img src="../../assets/backlight.png">
+        <img src="../../assets/one-pixel/backlight.png">
         <br>
         this is from the clockwork r01 patch, in the device tree file. there is a gpio pin referenced there, PD20, which i could fortunately control with u-boot. 
         i typed in <code>gpio set PD20</code> and like magic, the backlight turned on. this was the closest i got lol. i tried the gpio pin referenced in the lcd section (PD19) but idk what i really expected to happen.
@@ -176,7 +176,7 @@
         </p>
         <h2>2024-10-20 update: the pixel!</h2>
         <p>
-            <img src="../../assets/pixel.jpg">
+            <img src="../../assets/one-pixel/pixel.jpg">
             huge props to ylyamin on the clockwork forums!
         </p>
 </div>

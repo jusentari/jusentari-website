@@ -46,6 +46,8 @@ export class MainComponent implements AfterViewInit {
   cursorSpeed: number = 600;
 
   consoleTyping: boolean = false;
+  // gonna try doing this even though it aint the most efficient
+  isAnimPlaying: Record<string, boolean> = {}
   constructor() { }
 
   @HostListener('window:resize', ['$event'])
@@ -80,23 +82,30 @@ export class MainComponent implements AfterViewInit {
   beginAnimations(animationClass: string){
     const elements = document.getElementsByClassName(animationClass);
     for(let i = 0; i < elements.length; i++){
-      console.log('playing anim ' + animationClass);
       const element = elements.item(i);
       (element! as unknown as SVGAnimationElement).beginElement();
     }
+    this.isAnimPlaying[animationClass] = true;
   }
 
   ngAfterViewInit(): void {
     this.barIds.forEach(tabId => {
+      (document.getElementById('expand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+        this.isAnimPlaying['expand' + tabId] = false;
+      });
+      (document.getElementById('contract' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+        this.isAnimPlaying['contract' + tabId] = false;
+      });
+      (document.getElementById('fullExpand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+        this.isAnimPlaying['fullExpand' + tabId] = false;
+      });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
-        console.log('hovered');
         if(tabId != this.chosenId && this.pageWidth >= 768)
           this.beginAnimations('expand' + tabId);
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
-        console.log('unhovered');
-        if(tabId != this.chosenId && this.pageWidth >= 768){
-          this.beginAnimations('contract' + tabId);
+        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.isAnimPlaying['fullExpand' + tabId]){
+          this.beginAnimations('contract' + tabId); 
         }
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('click', (event) => {
@@ -110,7 +119,6 @@ export class MainComponent implements AfterViewInit {
           this.barIds = this.barIds.sort((a, b) => b - a);
         }
         this.startAnim(tabId);
-        console.log('click');
         let nextTabDelay = 0;
         if(this.chosenId != -1){
           this.beginAnimations('ribboncontract');
@@ -132,7 +140,6 @@ export class MainComponent implements AfterViewInit {
       (document.getElementById('ribbon')! as unknown as SVGRectElement).addEventListener('click', (event) => {
         if(this.pageWidth < 768){
           this.startAnim(tabId);
-          console.log('click');
           const oldChosenId = this.chosenId;
           this.beginAnimations('contract' + oldChosenId);
           this.beginAnimations('ribboncontract');

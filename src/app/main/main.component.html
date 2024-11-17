@@ -1,19 +1,17 @@
 <div width="100%">
-    <div [style.height]="'100px'" [style.background-color]="colors[4]">
-        <input class="consoleText" [style.background-color]="colors[4]"  [style.color]="colors[6]" [(ngModel)]="consoleText" autofocus *ngIf="pageWidth >= 768" />
+    <div [style.padding]="'0px'" [style.height]="tabHeight + 'px'" [style.background-color]="colors[4]">
+    <input class="consoleText" (keyup)="userType($event)" [style.height]="(tabHeight - 2) + 'px'" [style.background-color]="colors[4]"  [style.color]="colors[6]" [(ngModel)]="consoleText" *ngIf="pageWidth >= 768" />
     <!--use this for desktop-->
-      <svg [attr.viewbox]="'0 0 ' + pageWidth + ' 100'" overflow="visible" *ngIf="pageWidth >= 768" position="absolute" style="z-index: -1">
+      <svg [attr.viewbox]="'0 0 ' + pageWidth + ' ' + tabHeight" overflow="visible" *ngIf="pageWidth >= 768" position="absolute" style="z-index: -1">
         <ng-container *ngFor="let id of barIds">
              <!-- might need to scale this differently based on whether user is on mobile -->
           <polygon id="tab{{id}}" [attr.points]="getPolygon()" [style.fill]="colors[id]" [attr.transform]="'translate(' + ((pageWidth - id * tabSize) - tabSize ) + ',0)'"></polygon>
-          <rect y="100" [attr.width]="tabSize" height="0" [style.fill]="colors[id]" [attr.transform]="'skewX(' + getSkew() + '), translate(' + ((pageWidth - id * tabSize) - (tabSize * .6666666) ) + ',0)'">
+          <rect [attr.y]="tabHeight" [attr.width]="tabSize" height="0" [style.fill]="colors[id]" [attr.transform]="'skewX(' + getSkew() + '), translate(' + ((pageWidth - id * tabSize) - (tabSize * ((1/tabRatio) - 1)*tabRatio)) + ',0)'">
             <animate
                 attributeName="height"
                 begin="indefinite"
                 to="30"
                 [attr.dur]="'.5s'"
-                by="30"
-                values="0; 30;"
                 keySplines="
                     0.1 0.8 0.2 1;"
                 keyTimes="
@@ -22,6 +20,7 @@
                 [attr.id]="'expand'+id"
                 [attr.class]="'expand'+id"
                 fill="freeze"
+                restart="whenNotActive"
             />
             <animate
                 attributeName="height"
@@ -36,6 +35,7 @@
                 [attr.id]="'fullExpand'+id"
                 [attr.class]="'fullExpand'+id"
                 fill="freeze"
+                restart="whenNotActive"
             />
             <animate
                 attributeName="height"
@@ -50,6 +50,7 @@
                 [attr.id]="'contract'+id"
                 [attr.class]="'contract'+id"
                 fill="freeze"
+                restart="whenNotActive"
             />
             <animate
                 attributeName="height"
@@ -64,15 +65,16 @@
                 [attr.id]="'fullContract'+id"
                 [attr.class]="'fullContract'+id"
                 fill="freeze"
+                restart="whenNotActive"
             />
           </rect>
-          <text class="tabText" [style.fill]="colors[6]" [style.fontSize]="fontSize" [attr.x]="(pageWidth - id * tabSize - (tabSize * .65))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
+          <text class="tabText" [style.fill]="colors[6]" [style.fontSize]="fontSize" [attr.x]="(pageWidth - id * tabSize - (tabSize * ((1/tabRatio) - 1)*tabRatio)) + (tabSize * tabRatio)" [attr.y]="tabHeight/2 + 12" pointer-events="none">{{this.tabNames[id]}}</text>
         </ng-container>
-        <rect #ribbon id="ribbon" [attr.y]="-pageHeight" [attr.x]="pageWidth*.05" height="0" [attr.width]="tabSize" transform="scale(1,-1)" [attr.fill]="colors[chosenId]">
+        <rect #ribbon id="ribbon" [attr.y]="-pageHeight" [attr.x]="pageWidth*ribbonPercentage" height="0" [attr.width]="tabSize" transform="scale(1,-1)" [attr.fill]="colors[chosenId]">
           <animate
             attributeName="height"
             begin="indefinite"
-            [attr.to]="(pageHeight - 100)"
+            [attr.to]="(pageHeight - tabHeight)"
             [attr.dur]="ribbonExpandSpeed / 1000 + 's'"
             keySplines="
                 0.1 0.8 0.2 1;"
@@ -98,7 +100,7 @@
         </rect>
     </svg>
       <!--use this for mobile-->
-      <svg viewbox="0 0 400 100" overflow="visible" *ngIf="pageWidth < 768">
+      <svg [attr.viewbox]="'0 0 ' + pageWidth + ' ' + tabHeight" overflow="visible" *ngIf="pageWidth < 768">
         <ng-container *ngFor="let id of barIds">
              <!-- might need to scale this differently based on whether user is on mobile -->
           <polygon id="tab{{id}}" [attr.points]="getPolygon()" [style.fill]="colors[id]" [attr.transform]="'translate(' + ((pageWidth - id * tabSize) - tabSize ) + ',0)'">
@@ -106,7 +108,7 @@
                 attributeName="points"
                 begin="indefinite"
                 [attr.dur]="tabExpandSpeed / 1000 + 's'"
-                [attr.values]="getPolygon() + '; 0,100 0,0 ' + pageWidth + ',0 ' + pageWidth + ',100;'"
+                [attr.values]="getPolygon() + '; 0,' + tabHeight + ' 0,0 ' + pageWidth + ',0 ' + pageWidth + ',' + tabHeight + ';'"
                 keySplines="
                     0.1 0.8 0.2 1;"
                 keyTimes="
@@ -134,7 +136,7 @@
                 attributeName="points"
                 begin="indefinite"
                 [attr.dur]="tabExpandSpeed / 1000 + 's'"
-                [attr.values]="'0,100 0,0 ' + pageWidth + ',0 ' + pageWidth + ',100; ' + getPolygon() + ';'"
+                [attr.values]="'0,' + tabHeight + ' 0,0 ' + pageWidth + ',0 ' + pageWidth + ',' + tabHeight + '; ' + getPolygon() + ';'"
                 keySplines="
                     0.1 0.8 0.2 1;"
                 keyTimes="
@@ -159,7 +161,7 @@
                 fill="freeze"
             />
           </polygon>
-          <text class="tabText" [style.fill]="colors[6]" [style.fontSize]="fontSize" [attr.x]="(pageWidth - id * tabSize - (tabSize * .65))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
+          <text class="tabText" [style.fill]="colors[6]" [style.fontSize]="fontSize" [attr.x]="(pageWidth - id * tabSize - (tabSize * ((1/tabRatio) - 1)*tabRatio))" y="60" pointer-events="none">{{this.tabNames[id]}}</text>
         </ng-container>
         <rect #ribbon id="ribbon" [attr.y]="pageHeight*.8" [attr.x]="pageWidth" [attr.height]="pageHeight*.1" [attr.width]="tabSize" [attr.fill]="colors[chosenId]">
           <animate
@@ -191,7 +193,7 @@
         </rect>
       </svg>
     </div>
-    <div class="bottom" [style.height]="'calc(100vh - 100px)'" [style.background-color]="colors[5]">
+    <div class="bottom" [style.height]="'calc(100vh - ' + tabHeight + 'px)'" [style.background-color]="colors[5]">
         <ng-container [ngSwitch]="chosenId" style="color: #ddd">
             <ng-container *ngSwitchCase="-1">
                 <div style="color: #ddd">
@@ -199,25 +201,25 @@
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="0">
-                <div style="color: #ddd; padding: 30px; z-index: 1" [style.backgroundColor]="colors[1]" position="relative">
+                <div class="ribbonInfo" style="color: #ddd; padding: 10px; z-index: 1; width: 10vw">
                     <a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
                     <a href="https://github.com/jusentari" rel=me>github</a><br>
-                    email: jusentari@gmail.com<br>
-                    (idk why tha z-index isn't working)
+          <a href="mailto:jusentari@gmail.com">email</a><br>
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="1">
-                <div style="color: #ddd">
+                <div class="ribbonInfo" style="color: #ddd">
                     music
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="2">
-                <div style="color: #ddd">
+                <div class="ribbonInfo" style="color: #ddd">
                     games
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="3">
-                <div style="color: #ddd; padding-left: 110px;">
+        <!-- must share width of ribbon-->
+                <div class="ribbonInfo" style="color: #ddd; padding: 10px; width: 10vw">
                     <h2>stuff</h2><br>
                     <a routerLink="/one-pixel">one pixel</a><br>
                     <a href="https://github.com/jusentari/AlpacOS">alpacos</a><br>
@@ -226,6 +228,15 @@
                     <a href="https://github.com/jusentari/jusentari-website">this website</a><br>
                 </div>
             </ng-container>
+        </ng-container>
+        <ng-container *ngIf="consoleText == '> cd /home/jusentari/secret'">
+            secret...<br>
+            tab ratio <br>
+            <input type="range" min="-2" max="2" value=".2" step=".01" class="slider" id="tabRatio" [(ngModel)]="tabRatio"><br>
+            tab height <br>
+            <input type="range" min="3" max="200" value="100" step="1" class="slider" id="tabHeight" [(ngModel)]="tabHeight"><br>
+            tab percentage <br>
+            <input type="range" min="5" max="25" value="14" step="1" class="slider" id="tabPercentageSize" [(ngModel)]="tabPercentageSize"><br>
         </ng-container>
     </div>
 

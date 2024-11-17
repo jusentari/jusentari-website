@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { interval, take, timeout } from 'rxjs';
 
 @Component({
@@ -9,8 +9,15 @@ import { interval, take, timeout } from 'rxjs';
 export class MainComponent implements AfterViewInit {
   pageWidth: number = window.innerWidth;
   pageHeight: number = window.innerHeight;
+  @Input() tabRatio: number = .1;
+  @Input() tabPercentageSize: number = this.pageWidth >= 768 ? 12 : 27.5;
+  @Input() tabHeight: number = 100;
+  @Output() tabHeightChange = new EventEmitter<number>();
+  @Output() tabRatioChange = new EventEmitter<number>();
+  @Output() tabPercentageSizeChange = new EventEmitter<number>();
   animLock: boolean = false;
   // lmao
+  ribbonPercentage: number = .05;
   // tabs
   tabNames: string[] = ['social', 'music', 'games', 'code'];
   tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
@@ -18,19 +25,18 @@ export class MainComponent implements AfterViewInit {
   colors: string[] = ["#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000", "#222", "#eee"];
   chosenId: number = -1;
   // tab settings
-  tabPercentageSize = this.pageWidth >= 768 ? 12 : 27.5;
   fontSize = this.pageWidth >= 768 ? '40px' : '20px';
   _tabSize: number = 150;
   get tabSize(){
     return this.pageWidth * (this.tabPercentageSize / 100.0);
   }
   getPolygon(){
-    const thirdOfTabSize = this.tabSize*0.33333333333;
-    return `0,100 ${thirdOfTabSize},0 ${thirdOfTabSize*4},0 ${this.tabSize},100 `
+    const thirdOfTabSize = this.tabSize*this.tabRatio;
+    return `0,${this.tabHeight} ${thirdOfTabSize},0 ${thirdOfTabSize*((1/this.tabRatio)+1)},0 ${this.tabSize},${this.tabHeight} `
   }
   getSkew(){
-    const thirdOfTabSize = this.tabSize*0.33333333333;
-    return Math.atan(thirdOfTabSize/100) * -180/Math.PI;
+    const thirdOfTabSize = this.tabSize*this.tabRatio;
+    return Math.atan(thirdOfTabSize/this.tabHeight) * -180/Math.PI;
   }
   // animation settings
   tabExpandSpeed: number = 800;
@@ -75,6 +81,24 @@ export class MainComponent implements AfterViewInit {
     });
   }
 
+  userType(e: any): void {
+    if(e.key === "Enter"){
+      //parse input and go to page based on what user typed
+      const dirs = this.consoleText.split('/');
+      const file = dirs[dirs.length - 1];
+      console.log(file);
+      const page = this.tabShortNames.indexOf(file);
+      if(file === 'jusentari' || file === ''){
+        this.chosenId = -1;
+      }
+      if(page > -1){
+        console.log(page);
+        this.openTabAnim(page);
+        this.chosenId = page;
+      }
+    }
+  }
+
   beginAnimation(animationId: string){
     (document.getElementById(animationId)! as unknown as SVGAnimationElement).beginElement();
   }
@@ -88,28 +112,8 @@ export class MainComponent implements AfterViewInit {
     this.isAnimPlaying[animationClass] = true;
   }
 
-  ngAfterViewInit(): void {
-    this.barIds.forEach(tabId => {
-      (document.getElementById('expand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
-        this.isAnimPlaying['expand' + tabId] = false;
-      });
-      (document.getElementById('fullContract' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
-        this.isAnimPlaying['fullContract' + tabId] = false;
-      });
-      (document.getElementById('fullExpand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
-        this.isAnimPlaying['fullExpand' + tabId] = false;
-      });
-      (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
-        if(tabId != this.chosenId && this.pageWidth >= 768)
-          this.beginAnimations('expand' + tabId);
-      });
-      (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
-        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.isAnimPlaying['fullExpand' + tabId] && !this.isAnimPlaying['fullContract' + tabId]){
-          this.beginAnimations('contract' + tabId); 
-        }
-      });
-      (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('click', (event) => {
-        if(this.animLock || tabId === this.chosenId){
+  openTabAnim(tabId: number){
+    if(this.animLock || tabId === this.chosenId){
           return;
         }
         this.animLock = true;
@@ -123,7 +127,11 @@ export class MainComponent implements AfterViewInit {
         if(this.chosenId != -1){
           this.beginAnimations('ribboncontract');
           const oldChosenId = this.chosenId;
-          setTimeout(() => this.beginAnimations('fullContract' + oldChosenId), this.tabContractDelay);
+          setTimeout(() => {
+            this.barIds.filter(bId => bId != tabId).forEach(barId => {
+              this.beginAnimations('fullContract' + barId);
+            });
+          }, this.tabContractDelay);
           nextTabDelay = this.nextTabDelay;
         }
         setTimeout(() => {
@@ -136,6 +144,32 @@ export class MainComponent implements AfterViewInit {
             this.animLock = false;
           }, this.ribbonDelay);
         }, nextTabDelay);
+  }
+
+  // TODO: Hook these anims up again when user goes from mobile to pc and vice versa
+  ngAfterViewInit(): void {
+    this.barIds.forEach(tabId => {
+      (document.getElementById('expand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+        this.isAnimPlaying['expand' + tabId] = false;
+      });
+      (document.getElementById('fullContract' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+        this.isAnimPlaying['fullContract' + tabId] = false;
+      });
+      (document.getElementById('fullExpand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+        this.isAnimPlaying['fullExpand' + tabId] = false;
+        console.log(event);
+      });
+      (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
+        if(tabId != this.chosenId && this.pageWidth >= 768)
+          this.beginAnimations('expand' + tabId);
+      });
+      (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
+        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.isAnimPlaying['fullExpand' + tabId] && !this.isAnimPlaying['fullContract' + tabId]){
+          this.beginAnimations('contract' + tabId);
+        }
+      });
+      (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('click', (event) => {
+       this.openTabAnim(tabId);
       });
       (document.getElementById('ribbon')! as unknown as SVGRectElement).addEventListener('click', (event) => {
         if(this.pageWidth < 768){

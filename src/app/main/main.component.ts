@@ -117,6 +117,7 @@ export class MainComponent implements AfterViewInit {
     if(this.animLock || tabId === this.chosenId){
           return;
         }
+          const oldChosenId = this.chosenId;
         this.animLock = true;
         if(this.pageWidth < 768){
           this.barIds = this.barIds.sort((a, b) => a === tabId ? 9999 : b - a);
@@ -124,9 +125,10 @@ export class MainComponent implements AfterViewInit {
           this.barIds = this.barIds.sort((a, b) => b - a);
         }
         let nextTabDelay = 0;
+        if(oldChosenId > -1){
 
           this.beginAnimations('ribboncontract');
-          const oldChosenId = this.chosenId;
+        }
           setTimeout(() => {
             this.barIds.filter(bId => bId == this.chosenId).forEach(barId => {
               this.beginAnimations('fullContract' + barId);
@@ -176,11 +178,13 @@ export class MainComponent implements AfterViewInit {
        this.openTabAnim(tabId);
       });
       (document.getElementById('ribbon')! as unknown as SVGRectElement).addEventListener('click', (event) => {
-        if(this.pageWidth < 768){
+        if(!this.onDesktop){
           this.startAnim(tabId);
           const oldChosenId = this.chosenId;
           this.beginAnimations('contract' + oldChosenId);
-          this.beginAnimations('ribboncontract');
+          if(oldChosenId > -1){
+            this.beginAnimations('ribboncontract');
+          }
           setTimeout(() => {
             this.barIds = this.barIds.sort((a, b) => b - a);
             this.chosenId = -1;
@@ -225,9 +229,5 @@ export class MainComponent implements AfterViewInit {
       returnVal.push(newText.substring(0, newText.length - i));
     }
     return returnVal;
-  }
-
-  public getPolygonById(id: number){
-    return "-5000,0 " + 100 * id + ",0 " + 100 * (id - 1) + ",100 -5000,100 -5000,0 100,0";
   }
 }

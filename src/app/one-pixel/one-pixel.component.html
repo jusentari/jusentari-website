@@ -109,7 +109,7 @@
             href="https://github.com/clockworkpi/DevTerm/blob/main/Schematics/clockwork_Mainboard_V3.14_Schematic.pdf">source</a>)
         <br>
         i used a uart -> usb adapter and initially read the boot log just by touching a wire to the TX pin on the mini
-        pcie port. 
+        pcie port.
         i got lots of helpful data out of this (<a target="_blank" rel="noopener noreferrer" href="../../assets/one-pixel/raw_opensbi_output.txt">raw data</a>) and finally understood what was going on inside the device
         even though the screen was totally dark.
     </p>
@@ -154,7 +154,7 @@
         <br>
         <img src="../../assets/one-pixel/backlight.png">
         <br>
-        this is from the clockwork r01 patch, in the device tree file. there is a gpio pin referenced there, PD20, which i could fortunately control with u-boot. 
+        this is from the clockwork r01 patch, in the device tree file. there is a gpio pin referenced there, PD20, which i could fortunately control with u-boot.
         i typed in <code>gpio set PD20</code> and like magic, the backlight turned on. this was the closest i got lol. i tried the gpio pin referenced in the lcd section (PD19) but idk what i really expected to happen.
         </p>
         <h2>what the hell is MIPI?</h2>
@@ -177,6 +177,6 @@
         <h2>2024-10-20 update: the pixel!</h2>
         <p>
             <img src="../../assets/one-pixel/pixel.jpg">
-            huge props to ylyamin on the clockwork forums!
+    huge props to <a href="https://forum.clockworkpi.com/u/ylyamin">ylyamin</a> on the clockwork forums!
         </p>
 </div>

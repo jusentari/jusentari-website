@@ -20,7 +20,6 @@
                 [attr.id]="'expand'+id"
                 [attr.class]="'expand'+id"
                 fill="freeze"
-                restart="whenNotActive"
             />
             <animate
                 attributeName="height"
@@ -35,7 +34,6 @@
                 [attr.id]="'fullExpand'+id"
                 [attr.class]="'fullExpand'+id"
                 fill="freeze"
-                restart="whenNotActive"
             />
             <animate
                 attributeName="height"
@@ -50,7 +48,6 @@
                 [attr.id]="'contract'+id"
                 [attr.class]="'contract'+id"
                 fill="freeze"
-                restart="whenNotActive"
             />
             <animate
                 attributeName="height"
@@ -65,7 +62,6 @@
                 [attr.id]="'fullContract'+id"
                 [attr.class]="'fullContract'+id"
                 fill="freeze"
-                restart="whenNotActive"
             />
           </rect>
           <text class="tabText" [style.fill]="colors[6]" [style.fontSize]="fontSize" [attr.x]="(pageWidth - id * tabSize - (tabSize * ((1/tabRatio) - 1)*tabRatio)) + (tabSize * tabRatio)" [attr.y]="tabHeight/2 + 12" pointer-events="none">{{this.tabNames[id]}}</text>

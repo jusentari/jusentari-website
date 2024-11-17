@@ -9,12 +9,11 @@ import { interval, take, timeout } from 'rxjs';
 export class MainComponent implements AfterViewInit {
   pageWidth: number = window.innerWidth;
   pageHeight: number = window.innerHeight;
-  @Input() tabRatio: number = .1;
-  @Input() tabPercentageSize: number = this.pageWidth >= 768 ? 12 : 27.5;
-  @Input() tabHeight: number = 100;
-  @Output() tabHeightChange = new EventEmitter<number>();
-  @Output() tabRatioChange = new EventEmitter<number>();
-  @Output() tabPercentageSizeChange = new EventEmitter<number>();
+  tabRatio: number = .1;
+  //@Input() tabPercentageSize: number = this.pageWidth >= 768 ? 12 : 27.5;
+  tabHeight: number = 100;
+  //@Output() tabPercentageSizeChange = new EventEmitter<number>();
+  tabPercentageSize: number = this.pageWidth >= 768 ? 12 : 27.5;
   animLock: boolean = false;
   // lmao
   ribbonPercentage: number = .05;
@@ -25,7 +24,8 @@ export class MainComponent implements AfterViewInit {
   colors: string[] = ["#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000", "#222", "#eee"];
   chosenId: number = -1;
   // tab settings
-  fontSize = this.pageWidth >= 768 ? '40px' : '20px';
+  onDesktop: boolean = this.pageWidth >= 768;
+  fontSize: string = this.onDesktop ? '40px' : '20px';
   _tabSize: number = 150;
   get tabSize(){
     return this.pageWidth * (this.tabPercentageSize / 100.0);
@@ -63,11 +63,13 @@ export class MainComponent implements AfterViewInit {
   updateWindowSize(){
     this.pageWidth = window.innerWidth;
     this.pageHeight = window.innerHeight;
-    this.tabPercentageSize = this.pageWidth >= 768 ? 12 : 20;
-    this.fontSize = this.pageWidth >= 1250 ? '40px' : (this.pageWidth >= 1050 ? '30px' : this.pageWidth >= 768 ? '25px' : '20px');
-    if((this.pageWidth < 768 && this.tabPercentageSize == 12) || (this.pageWidth >= 768 && this.tabPercentageSize == 20)){
+    if((!this.onDesktop && this.pageWidth >= 768) || (this.onDesktop && this.pageWidth < 768)){
       setTimeout(() => this.ngAfterViewInit(), 1000);
+      setTimeout(() => this.openTabAnim(this.chosenId), 1500);
     }
+    this.onDesktop = this.pageWidth >= 768;
+    this.tabPercentageSize = this.onDesktop ? 12 : 27.5;
+    this.fontSize = this.pageWidth >= 1250 ? '40px' : (this.pageWidth >= 1050 ? '30px' : this.pageWidth >= 768 ? '25px' : '20px');
   }
 
   ngOnInit(): void {
@@ -89,12 +91,11 @@ export class MainComponent implements AfterViewInit {
       console.log(file);
       const page = this.tabShortNames.indexOf(file);
       if(file === 'jusentari' || file === ''){
-        this.chosenId = -1;
+        this.openTabAnim(-1);
       }
       if(page > -1){
         console.log(page);
         this.openTabAnim(page);
-        this.chosenId = page;
       }
     }
   }
@@ -122,21 +123,21 @@ export class MainComponent implements AfterViewInit {
         } else {
           this.barIds = this.barIds.sort((a, b) => b - a);
         }
-        this.startAnim(tabId);
         let nextTabDelay = 0;
-        if(this.chosenId != -1){
+
           this.beginAnimations('ribboncontract');
           const oldChosenId = this.chosenId;
           setTimeout(() => {
-            this.barIds.filter(bId => bId != tabId).forEach(barId => {
+            this.barIds.filter(bId => bId == this.chosenId).forEach(barId => {
               this.beginAnimations('fullContract' + barId);
             });
           }, this.tabContractDelay);
           nextTabDelay = this.nextTabDelay;
-        }
         setTimeout(() => {
           this.chosenId = tabId;
         }, this.ribbonContractSpeed);
+    if(tabId != -1){
+        this.startAnim(tabId);
         setTimeout(() => {
           this.beginAnimations('fullExpand' + tabId);
           setTimeout(() => {
@@ -144,18 +145,21 @@ export class MainComponent implements AfterViewInit {
             this.animLock = false;
           }, this.ribbonDelay);
         }, nextTabDelay);
+    } else {
+      this.animLock = false;
+    }
   }
 
   // TODO: Hook these anims up again when user goes from mobile to pc and vice versa
   ngAfterViewInit(): void {
     this.barIds.forEach(tabId => {
-      (document.getElementById('expand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+      (document.getElementById('expand' + tabId) as unknown as SVGAnimateElement)?.addEventListener('endEvent', (event) => {
         this.isAnimPlaying['expand' + tabId] = false;
       });
-      (document.getElementById('fullContract' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+      (document.getElementById('fullContract' + tabId) as unknown as SVGAnimateElement)?.addEventListener('endEvent', (event) => {
         this.isAnimPlaying['fullContract' + tabId] = false;
       });
-      (document.getElementById('fullExpand' + tabId)! as unknown as SVGAnimateElement).addEventListener('endEvent', (event) => {
+      (document.getElementById('fullExpand' + tabId) as unknown as SVGAnimateElement)?.addEventListener('endEvent', (event) => {
         this.isAnimPlaying['fullExpand' + tabId] = false;
         console.log(event);
       });

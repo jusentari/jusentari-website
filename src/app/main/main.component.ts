@@ -20,23 +20,23 @@ export class MainComponent implements AfterViewInit {
   // tabs
   tabNames: string[] = ['social', 'music', 'games', 'code'];
   tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
-  barIds:number[] = [3,2,1,0];
+  barIds: number[] = [3, 2, 1, 0];
   colors: string[] = ["#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000", "#222", "#eee"];
   chosenId: number = -1;
   // tab settings
   onDesktop: boolean = this.pageWidth >= 768;
   fontSize: string = this.onDesktop ? '40px' : '20px';
   _tabSize: number = 150;
-  get tabSize(){
+  get tabSize() {
     return this.pageWidth * (this.tabPercentageSize / 100.0);
   }
-  getPolygon(){
-    const thirdOfTabSize = this.tabSize*this.tabRatio;
-    return `0,${this.tabHeight} ${thirdOfTabSize},0 ${thirdOfTabSize*((1/this.tabRatio)+1)},0 ${this.tabSize},${this.tabHeight} `
+  getPolygon() {
+    const thirdOfTabSize = this.tabSize * this.tabRatio;
+    return `0,${this.tabHeight} ${thirdOfTabSize},0 ${thirdOfTabSize * ((1 / this.tabRatio) + 1)},0 ${this.tabSize},${this.tabHeight} `
   }
-  getSkew(){
-    const thirdOfTabSize = this.tabSize*this.tabRatio;
-    return Math.atan(thirdOfTabSize/this.tabHeight) * -180/Math.PI;
+  getSkew() {
+    const thirdOfTabSize = this.tabSize * this.tabRatio;
+    return Math.atan(thirdOfTabSize / this.tabHeight) * -180 / Math.PI;
   }
   // animation settings
   tabExpandSpeed: number = 800;
@@ -60,10 +60,10 @@ export class MainComponent implements AfterViewInit {
   onResize(event: any) {
     this.updateWindowSize();
   }
-  updateWindowSize(){
+  updateWindowSize() {
     this.pageWidth = window.innerWidth;
     this.pageHeight = window.innerHeight;
-    if((!this.onDesktop && this.pageWidth >= 768) || (this.onDesktop && this.pageWidth < 768)){
+    if ((!this.onDesktop && this.pageWidth >= 768) || (this.onDesktop && this.pageWidth < 768)) {
       setTimeout(() => this.ngAfterViewInit(), 1000);
       setTimeout(() => this.openTabAnim(this.chosenId), 1500);
     }
@@ -76,77 +76,77 @@ export class MainComponent implements AfterViewInit {
     const observable = interval(this.cursorSpeed);
     // TODO: start this subscription on type finish, as to not have it flash quickly after ending the typing
     const subscription = observable.subscribe(x => {
-      if(!this.consoleTyping){
-        if(this.consoleText.includes('|'))
+      if (!this.consoleTyping) {
+        if (this.consoleText.includes('|'))
           this.consoleText = this.consoleText.substring(0, this.consoleText.length - 1);
       }
     });
   }
 
   userType(e: any): void {
-    if(e.key === "Enter"){
+    if (e.key === "Enter") {
       //parse input and go to page based on what user typed
       const dirs = this.consoleText.split('/');
       const file = dirs[dirs.length - 1];
       console.log(file);
       const page = this.tabShortNames.indexOf(file);
-      if(file === 'jusentari' || file === ''){
+      if (file === 'jusentari' || file === '') {
         this.openTabAnim(-1);
       }
-      if(page > -1){
+      if (page > -1) {
         console.log(page);
         this.openTabAnim(page);
       }
     }
   }
 
-  beginAnimation(animationId: string){
+  beginAnimation(animationId: string) {
     (document.getElementById(animationId)! as unknown as SVGAnimationElement).beginElement();
   }
 
-  beginAnimations(animationClass: string){
+  beginAnimations(animationClass: string) {
     const elements = document.getElementsByClassName(animationClass);
-    for(let i = 0; i < elements.length; i++){
+    for (let i = 0; i < elements.length; i++) {
       const element = elements.item(i);
       (element! as unknown as SVGAnimationElement).beginElement();
     }
     this.isAnimPlaying[animationClass] = true;
   }
 
-  openTabAnim(tabId: number){
-    if(this.animLock || tabId === this.chosenId){
-          return;
-        }
-          const oldChosenId = this.chosenId;
-        this.animLock = true;
-        if(this.pageWidth < 768){
-          this.barIds = this.barIds.sort((a, b) => a === tabId ? 9999 : b - a);
-        } else {
-          this.barIds = this.barIds.sort((a, b) => b - a);
-        }
-        let nextTabDelay = 0;
-        if(oldChosenId > -1){
+  openTabAnim(tabId: number) {
+    if (this.animLock || tabId === this.chosenId) {
+      return;
+    }
+    const oldChosenId = this.chosenId;
+    this.animLock = true;
+    if (this.pageWidth < 768) {
+      this.barIds = this.barIds.sort((a, b) => a === tabId ? 9999 : b - a);
+    } else {
+      this.barIds = this.barIds.sort((a, b) => b - a);
+    }
+    let nextTabDelay = 0;
+    if (oldChosenId > -1) {
 
-          this.beginAnimations('ribboncontract');
-        }
-          setTimeout(() => {
-            this.barIds.filter(bId => bId == this.chosenId).forEach(barId => {
-              this.beginAnimations('fullContract' + barId);
-            });
-          }, this.tabContractDelay);
-          nextTabDelay = this.nextTabDelay;
+      this.beginAnimations('ribboncontract');
+    }
+    setTimeout(() => {
+      this.barIds.filter(bId => bId == this.chosenId).forEach(barId => {
+        this.beginAnimations('fullContract' + barId);
+      });
+    }, this.tabContractDelay);
+    nextTabDelay = this.nextTabDelay;
+    setTimeout(() => {
+      this.chosenId = tabId;
+    }, this.ribbonContractSpeed);
+    if (tabId != -1) {
+      this.startAnim(tabId);
+      setTimeout(() => {
+        this.beginAnimations('fullExpand' + tabId);
         setTimeout(() => {
-          this.chosenId = tabId;
-        }, this.ribbonContractSpeed);
-    if(tabId != -1){
-        this.startAnim(tabId);
-        setTimeout(() => {
-          this.beginAnimations('fullExpand' + tabId);
-          setTimeout(() => {
-            this.beginAnimations('ribbonexpand');
-            this.animLock = false;
-          }, this.ribbonDelay);
-        }, nextTabDelay);
+          this.beginAnimations('ribbonexpand');
+          this.animLock = false;
+        }, this.ribbonDelay);
+      }, nextTabDelay);
     } else {
       this.animLock = false;
     }
@@ -166,23 +166,23 @@ export class MainComponent implements AfterViewInit {
         console.log(event);
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseover', (event) => {
-        if(tabId != this.chosenId && this.pageWidth >= 768)
+        if (tabId != this.chosenId && this.pageWidth >= 768)
           this.beginAnimations('expand' + tabId);
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('mouseout', (event) => {
-        if(tabId != this.chosenId && this.pageWidth >= 768 && !this.isAnimPlaying['fullExpand' + tabId] && !this.isAnimPlaying['fullContract' + tabId]){
+        if (tabId != this.chosenId && this.pageWidth >= 768 && !this.isAnimPlaying['fullExpand' + tabId] && !this.isAnimPlaying['fullContract' + tabId]) {
           this.beginAnimations('contract' + tabId);
         }
       });
       (document.getElementById('tab' + tabId)! as unknown as SVGPolygonElement).addEventListener('click', (event) => {
-       this.openTabAnim(tabId);
+        this.openTabAnim(tabId);
       });
       (document.getElementById('ribbon')! as unknown as SVGRectElement).addEventListener('click', (event) => {
-        if(!this.onDesktop){
+        if (!this.onDesktop) {
           this.startAnim(tabId);
           const oldChosenId = this.chosenId;
           this.beginAnimations('contract' + oldChosenId);
-          if(oldChosenId > -1){
+          if (oldChosenId > -1) {
             this.beginAnimations('ribboncontract');
           }
           setTimeout(() => {
@@ -195,7 +195,7 @@ export class MainComponent implements AfterViewInit {
   }
 
   startAnim(id: number): void {
-    if(this.consoleTyping){
+    if (this.consoleTyping) {
       return;
     }
     this.consoleTyping = true;
@@ -215,7 +215,7 @@ export class MainComponent implements AfterViewInit {
     var length = Math.max(oldText.length, newText.length);
     var index = -1;
     let mismatchFound = false
-    while (!mismatchFound){
+    while (!mismatchFound) {
       index++;
       mismatchFound = oldText.charAt(index).localeCompare(newText.charAt(index)) !== 0 || index > length;
     }

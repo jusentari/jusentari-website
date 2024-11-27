@@ -8,6 +8,8 @@ deploy.sh
 /tmp
 /out-tsc
 /bazel-out
+/.svelte-kit
+/build
 
 # Node
 /node_modules

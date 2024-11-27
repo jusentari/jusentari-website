@@ -3,6 +3,8 @@
 	import { barState, colors } from '../state.svelte';
 	let { id, tabHeight, tabRatio, visible } = $props();
 	let screenWidth: number = $state(0);
+
+	let screenHeight: number = $state(0);
 	let isDesktop = $derived(screenWidth >= 768);
 	let tabPercentageSize: number = $derived(isDesktop ? 0.12 : 0.27);
 	let tabPixelSize: number = $derived(screenWidth * tabPercentageSize);
@@ -39,7 +41,7 @@
 	let fullStretch = $derived(barState.id == id);
 </script>
 
-<svelte:window bind:innerWidth={screenWidth} />
+<svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight}/>
 {#if isDesktop}
 	<rect
 		class="barPolygon"
@@ -103,7 +105,7 @@ Transitions only happen on creation/destruction of components
 		x={xRectOffset}
 		transform="skewX({skew})"
 		width={tabPixelSize}
-		height="1000"
+		height="{screenHeight - tabHeight}"
 		fill={colors[id]}
 	>
 	</rect>

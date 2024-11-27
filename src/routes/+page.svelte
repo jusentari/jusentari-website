@@ -54,7 +54,7 @@
 		{#each tabIds as tabId}
 			<Bar id={tabId} {tabHeight} {tabRatio} {visible} />
 		{/each}
-		<Ribbon xOffset={ribbonXOffset} {ribbonWidth} {ribbonHeight} />
+		<Ribbon xOffset={ribbonXOffset} ribbonWidth={tabPixelSize} {ribbonHeight} />
 	</svg>
 </div>
 <div style="background-color: colors[{barState.id}]" hidden>

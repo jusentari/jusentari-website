@@ -45,6 +45,7 @@
 			out:ribbonOut={{ delay: 0, duration: 500, dist: 0 }}
 			height="{ribbonHeight}px"
 			width="{ribbonWidth}px"
+			onintroend={() => barState.isAnimating = false}
 			fill={colors[barState.id]}
 		></rect>
 		<rect

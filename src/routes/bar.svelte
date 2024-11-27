@@ -41,7 +41,7 @@
 	let fullStretch = $derived(barState.id == id);
 </script>
 
-<svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight}/>
+<svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight} />
 {#if isDesktop}
 	<rect
 		class="barPolygon"
@@ -52,7 +52,9 @@
 		onpointerenter={() => (hover = true)}
 		onpointerleave={() => (hover = false)}
 		onclick={() => {
-			barState.id = id;
+			if (!barState.isAnimating) {
+				barState.id = id;
+			}
 		}}
 		width={tabPixelSize}
 		height={tabHeight}
@@ -71,7 +73,9 @@
 		onpointerenter={() => (hover = true)}
 		onpointerleave={() => (hover = false)}
 		onclick={() => {
-			barState.id = id;
+			if (!barState.isAnimating) {
+				barState.id = id;
+			}
 		}}
 		width={tabPixelSize}
 		height={tabHeight}
@@ -105,8 +109,9 @@ Transitions only happen on creation/destruction of components
 		x={xRectOffset}
 		transform="skewX({skew})"
 		width={tabPixelSize}
-		height="{screenHeight - tabHeight}"
+		height={screenHeight - tabHeight}
 		fill={colors[id]}
+		onintrostart={() => (barState.isAnimating = true)}
 	>
 	</rect>
 {/if}

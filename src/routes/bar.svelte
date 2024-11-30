@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { circIn, elasticOut, quadIn, quadOut, quartIn } from 'svelte/easing';
+	import { circIn } from 'svelte/easing';
 	import { barState, colors } from '../state.svelte';
-	let { id, tabHeight, tabRatio, visible } = $props();
+	let { id, tabHeight, tabRatio } = $props();
 	let screenWidth: number = $state(0);
 
 	let screenHeight: number = $state(0);
@@ -12,7 +12,7 @@
 	let xFontOffset = $derived(xOffset + tabPixelSize * 0.3);
 	let xRectOffset = $derived(xOffset - tabPixelSize * (1 / tabRatio - 1) * tabRatio + tabPixelSize);
 	let tabNames: string[] = ['social', 'music', 'games', 'code'];
-	const tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
+	//const tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
 	let skew = $derived(Math.atan((tabPixelSize * tabRatio) / tabHeight) * (-180 / Math.PI));
 	let fontSize = $derived(
 		screenWidth >= 1250
@@ -23,22 +23,27 @@
 					? '25px'
 					: '20px'
 	);
-	function bezier(t: number) {
+	/*function bezier(t: number) {
 		return 1 / (t + 0.00001);
-	}
+	}*/
 	function ribbonOut(
-		node: SVGElement,
+		_node: SVGElement,
 		params: { delay?: number; duration?: number; easing?: (t: number) => number; dist: number }
 	) {
 		return {
 			delay: params.delay || 0,
 			duration: params.duration || 4000,
 			easing: circIn,
-			css: (t: number, u: number) => `height: ${t * params.dist}px;`
+			css: (t: number) => `height: ${t * params.dist}px;`
 		};
 	}
 	let hover = $state(false);
 	let fullStretch = $derived(barState.id == id);
+	function handleEnter(e: any) {
+		if (e.key === 'Enter' && !barState.isAnimating) {
+			barState.id = id;
+		}
+	}
 </script>
 
 <svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight} />
@@ -56,11 +61,16 @@
 				barState.id = id;
 			}
 		}}
+		onfocusin={() => (hover = true)}
+		onfocusout={() => (hover = false)}
+		onkeydown={handleEnter}
 		width={tabPixelSize}
 		height={tabHeight}
 		x={xRectOffset}
 		transform="skewX({skew})"
 		fill={colors[id]}
+		tabindex={0}
+		role="button"
 	>
 	</rect>
 {:else}
@@ -77,11 +87,16 @@
 				barState.id = id;
 			}
 		}}
+		onfocusin={() => (hover = true)}
+		onfocusout={() => (hover = false)}
+		onkeydown={handleEnter}
 		width={tabPixelSize}
 		height={tabHeight}
 		transform="skewX({skew})"
 		fill={colors[id]}
 		class:mobileBarFull={barState.id == id}
+		tabindex={id}
+		role="button"
 	>
 	</rect>
 {/if}
@@ -132,9 +147,6 @@ Transitions only happen on creation/destruction of components
 	}
 	.barPolygon {
 		cursor: pointer;
-	}
-
-	.barFull {
 	}
 
 	.barMobile {

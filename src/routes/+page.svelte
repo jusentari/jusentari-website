@@ -1,16 +1,13 @@
 <script lang="ts">
 	import Bar from './bar.svelte';
-	import { flip } from 'svelte/animate';
 	import Prompt from './prompt.svelte';
 	import Ribbon from './ribbon.svelte';
 	import { barState } from '../state.svelte';
-	let tabNames = ['social', 'music', 'games', 'code'];
 	const colors = ['#648fff', '#785ef0', '#dc267f', '#fe6100', '#ffb000', '#222', '#eee'];
 
 	let screenWidth = $state(0);
 	let screenHeight = $state(0);
 	let isDesktop = $derived(screenWidth >= 768);
-	let visible = $state(true);
 	let tabIds = $derived.by(() => {
 		if (isDesktop) {
 			return [3, 2, 1, 0];
@@ -23,7 +20,6 @@
 	let tabPercentageSize = $derived(isDesktop ? 0.12 : 0.275);
 	let tabPixelSize = $derived(screenWidth * tabPercentageSize);
 
-	let showRibbon: boolean = $derived(barState.id > 0);
 	const ribbonXOffset = 100;
 	const ribbonWidth = 150;
 	let ribbonHeight = $derived(screenHeight - tabHeight);
@@ -52,7 +48,7 @@
 	{/if}
 	<svg style="position: absolute;" viewBox="0 0 {screenWidth} {screenHeight}">
 		{#each tabIds as tabId}
-			<Bar id={tabId} {tabHeight} {tabRatio} {visible} />
+			<Bar id={tabId} {tabHeight} {tabRatio} />
 		{/each}
 		<Ribbon xOffset={ribbonXOffset} ribbonWidth={tabPixelSize} {ribbonHeight} />
 	</svg>

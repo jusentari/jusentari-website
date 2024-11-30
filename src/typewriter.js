@@ -7,7 +7,6 @@ export function typewriter(node, { speed = 100, origin = '', dest = '' }) {
 		index++;
 		mismatchFound = origin.charAt(index).localeCompare(dest.charAt(index)) !== 0 || index > length;
 	}
-	console.log(index);
 	const numberToErase = origin.length - index;
 	const numberToAdd = dest.length - index;
 	const intermediateStrings = [];

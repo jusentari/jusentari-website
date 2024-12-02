@@ -63,7 +63,7 @@
 {#if barState.id >= 0}
 	<div
 		class="ribbonInfo"
-		style="z-index: 10 !important; position: absolute; margin-left: {ribbonXOffset}px; width: {ribbonWidth}px; color: #ddd"
+		style="z-index: 10 !important; position: absolute; margin-top: 50px; margin-left: {ribbonXOffset}px; width: {ribbonWidth}px; color: #ddd"
 	>
 		{@html ribbonHTML[barState.id]}
 	</div>

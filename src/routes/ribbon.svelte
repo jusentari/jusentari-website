@@ -37,6 +37,7 @@
 			barState.id = -1;
 		}
 	}
+	let hover = $state(false);
 </script>
 
 <svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight} />
@@ -67,12 +68,45 @@
 		fill={colors[barState.id]}
 		onkeydown={handleEnter}
 		role="button"
-		tabindex='0'
+		tabindex="0"
 	></rect>
 {/key}
-
+{#if id >=0 }
+<rect
+	x={xOffset}
+	y="100"
+	width={ribbonWidth}
+	height="30"
+	class="ribbonClose"
+	onpointerenter={() => (hover = true)}
+	onpointerleave={() => (hover = false)}
+	onclick={() => {
+		if (!barState.isAnimating) {
+			barState.id = -1;
+		}
+	}}
+	onfocusin={() => (hover = true)}
+	onfocusout={() => (hover = false)}
+	onkeydown={handleEnter}
+	role="button"
+	tabindex="0"
+	fill="{colors[id]}"
+>
+</rect>
+<polygon
+	points="0,0 40,0 20,10"
+	fill="#000"
+	class="ribbonClose {barState.id >= 0 && isDesktop} ? '' : 'hidden'}"
+	transform="translate({xOffset + ribbonWidth / 2 - 20}, 110)"
+>
+</polygon>
+{/if}
 <style>
 	.hidden {
 		display: none;
+	}
+	.ribbonClose:hover {
+		cursor: pointer;
+		background-image: linear-gradient(red, yellow, green);
 	}
 </style>

@@ -150,6 +150,7 @@ Transitions only happen on creation/destruction of components
 	}
 
 	.barMobile {
+		cursor: pointer;
 		width: var(--tab-width);
 		transform: skewX(var(--skew)) translateX(var(--xOffset));
 		transition: all 2s;

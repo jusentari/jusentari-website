@@ -26,6 +26,7 @@
 	/*function bezier(t: number) {
 		return 1 / (t + 0.00001);
 	}*/
+	$inspect(xRectOffset);
 	function ribbonOut(
 		_node: SVGElement,
 		params: { delay?: number; duration?: number; easing?: (t: number) => number; dist: number }
@@ -75,16 +76,17 @@
 	</rect>
 {:else}
 	<rect
+		id="bar{id}"
 		style:--tab-width="{tabPixelSize}px"
 		style:--xOffset="{xRectOffset}px"
 		style:--full-width="{screenWidth}px"
 		style:--skew="{skew}deg"
-		class="barMobile"
 		onpointerenter={() => (hover = true)}
 		onpointerleave={() => (hover = false)}
 		onclick={() => {
 			if (!barState.isAnimating) {
 				barState.id = id;
+				barState.isAnimating = true;
 			}
 		}}
 		onfocusin={() => (hover = true)}
@@ -92,10 +94,10 @@
 		onkeydown={handleEnter}
 		width={tabPixelSize}
 		height={tabHeight}
-		transform="skewX({skew})"
 		fill={colors[id]}
 		class:mobileBarFull={barState.id == id}
-		tabindex={id}
+		class:barMobile={barState.id != id}
+		tabindex=0
 		role="button"
 	>
 	</rect>
@@ -126,7 +128,6 @@ Transitions only happen on creation/destruction of components
 		width={tabPixelSize}
 		height={screenHeight - tabHeight}
 		fill={colors[id]}
-		onintrostart={() => (barState.isAnimating = true)}
 	>
 	</rect>
 {/if}
@@ -153,12 +154,12 @@ Transitions only happen on creation/destruction of components
 		cursor: pointer;
 		width: var(--tab-width);
 		transform: skewX(var(--skew)) translateX(var(--xOffset));
-		transition: all 2s;
+		transition: width 1s, transform 1s;
 	}
 
 	.mobileBarFull {
-		transform: translateX(0px) skewX(0);
+		transform: skewX(0) translateX(0px);
 		width: var(--full-width);
-		transition: all 2s;
+		transition: width 1s, transform 1s;
 	}
 </style>

@@ -3,6 +3,7 @@
 	import Prompt from './prompt.svelte';
 	import Ribbon from './ribbon.svelte';
 	import { barState } from '../state.svelte';
+	import { fade } from 'svelte/transition';
 	import { circIn } from 'svelte/easing';
 	const colors = ['#648fff', '#785ef0', '#dc267f', '#fe6100', '#ffb000', '#222', '#eee'];
 
@@ -44,11 +45,12 @@
 	tabPercentageSize: {tabPercentageSize} <br />
 	tabPixelSize: {tabPixelSize} <br />
 </div>
-<Ribbon xOffset={ribbonXOffset} {ribbonWidth} {ribbonHeight} />
+<Ribbon xOffset={ribbonXOffset} ribbonWidth={tabPixelSize} {ribbonHeight} />
 {#if barState.id < 0}
-	<div style="color: #ddd; z-index: 2; margin: 100px">
-		welcome to my website! it is currently under construction. click on the tabs up top to see my
-		various projects :)
+	<div style="color: #ddd; z-index: 2; margin: 100px" in:fade={{duration: 500, easing: circIn, delay: 500}}>
+		<img src="me.jpg" alt="me (alpaca)" height="100px" />
+		welcome to my website! it is currently under construction. click on the tabs up top to see my various
+		projects :)
 	</div>
 {/if}
 

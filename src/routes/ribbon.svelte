@@ -31,11 +31,12 @@
 	<a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
 	<a href="https://github.com/jusentari" rel=me>github</a><br>
         <a href="mailto:jusentari@gmail.com">email</a><br>
+	discord: jusentari<br>
 `,
 		`music`,
 		`games`,
 		`           <h2>stuff</h2><br>
-                    <a routerLink="/one-pixel">one pixel</a><br>
+                    <a href="/one-pixel">one pixel</a><br>
                     <a href="https://github.com/jusentari/AlpacOS">alpacos</a><br>
                     <a href="https://github.com/jusentari/nds-badge">nds badge</a><br>
                     <a href="">touchscreen badge</a><br>

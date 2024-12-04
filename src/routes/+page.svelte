@@ -61,6 +61,6 @@
 
 	@font-face {
 		font-family: 'Terminal';
-		src: url('/posshydrafont.ttf') format('truetype');
+		src: url('/TerminessNerdFontMono-Regular.ttf') format('truetype');
 	}
 </style>

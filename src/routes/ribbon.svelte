@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { circIn } from 'svelte/easing';
 	import { barState, colors } from '../state.svelte.js';
+	import { fade } from 'svelte/transition';
 	let { xOffset, ribbonWidth, ribbonHeight } = $props();
 	let id = $derived(barState.id);
 	$inspect(barState);
@@ -12,7 +13,7 @@
 			delay: params.delay || 0,
 			duration: params.duration || 4000,
 			easing: circIn,
-			css: (_t: number, u: number) => `height: ${u * ribbonHeight}px;`
+			css: (t: number, u: number) => `max-height: ${t * ribbonHeight}px;`
 		};
 	}
 	let screenWidth = $state(0);
@@ -28,19 +29,20 @@
 
 	const ribbonHTML = [
 		`
-	<a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
-	<a href="https://github.com/jusentari" rel=me>github</a><br>
-        <a href="mailto:jusentari@gmail.com">email</a><br>
-	discord: jusentari<br>
-`,
-		`music`,
-		`games`,
-		`           <h2>stuff</h2><br>
-                    <a href="/one-pixel">one pixel</a><br>
-                    <a href="https://github.com/jusentari/AlpacOS">alpacos</a><br>
-                    <a href="https://github.com/jusentari/nds-badge">nds badge</a><br>
-                    <a href="">touchscreen badge</a><br>
-                    <a href="https://github.com/jusentari/jusentari-website">this website</a><br>`
+			<a href="https://bsky.app/profile/jusentari.com" rel=me>bluesky</a><br>
+			<a href="https://github.com/jusentari" rel=me>github</a><br>
+			<a href="mailto:jusentari@gmail.com">email</a><br>
+			discord: jusentari<br>
+		`,
+		`i'll eventually migrate these over to this website but here is a <a href="https://soundcloud.com/user-258933965">soundcloud link</a>`,
+		``,
+		`
+			<a href="/one-pixel">one pixel</a><br>
+			<a href="https://github.com/jusentari/AlpacOS">alpacos</a><br>
+			<a href="https://github.com/jusentari/nds-badge">nds badge</a><br>
+			<a href="">lcd badge</a><br>
+			<a href="https://github.com/jusentari/jusentari-website">this website</a><br>
+		`
 	];
 </script>
 
@@ -48,13 +50,18 @@
 {#key id}
 	<div
 		class="ribbonInfo"
-		style="position: absolute; margin-left: {xOffset}px; width: {ribbonWidth}px; min-height: {ribbonHeight}px; color: #ddd; background-color: {colors[id]}"
-		out:ribbonIn={{delay:500, duration:1}}>
+		style="overflow: hidden; position: absolute; bottom: 0px; margin-left: {xOffset}px; width: {ribbonWidth}px; height: {ribbonHeight}px; color: #ddd; background-color: {colors[
+			id
+		]}"
+		in:ribbonIn={{ delay: 700, duration: 500 }}
+		out:ribbonIn={{ delay: 0, duration: 500 }}
+
+	>
 		{#if id >= 0}
 			<svg viewBox="0 0 {ribbonWidth} 50">
 				<rect
-					x=0
-					y=0
+					x="0"
+					y="0"
 					width={ribbonWidth}
 					height="30"
 					class="ribbonClose"
@@ -84,13 +91,13 @@
 		{/if}
 		{@html ribbonHTML[barState.id]}
 	</div>
-	<div
-		class="{id >= 0 ? '' : 'hidden'}"
+<!--	<div
+		class={id >= 0 ? '' : 'hidden'}
 		style="background-color: #222; position: absolute; left: {xOffset}px; top: 100px; height: 0px; width: {ribbonWidth}px; z-index: 1"
-		in:ribbonIn={{ delay: 800, duration: 500 }}
+		in:ribbonIn={{ delay: 700, duration: 500 }}
 		out:ribbonIn={{ delay: 0, duration: 500 }}
 		onintroend={() => (barState.isAnimating = false)}
-	></div>
+	></div>-->
 {/key}
 
 <style>
@@ -99,6 +106,10 @@
 	}
 	.ribbonClose:hover {
 		cursor: pointer;
-		background-image: linear-gradient(red, yellow, green);
+	}
+	.ribbonInfo {
+		padding-left: 10px;
+		padding-right: 10px;
+		line-height: 2;
 	}
 </style>

@@ -16,12 +16,12 @@
 	let skew = $derived(Math.atan((tabPixelSize * tabRatio) / tabHeight) * (-180 / Math.PI));
 	let fontSize = $derived(
 		screenWidth >= 1250
-			? '40px'
+			? '32px'
 			: screenWidth >= 1050
-				? '30px'
+				? '28px'
 				: screenWidth >= 768
-					? '25px'
-					: '20px'
+					? '24px'
+					: '16px'
 	);
 	/*function bezier(t: number) {
 		return 1 / (t + 0.00001);
@@ -40,6 +40,7 @@
 	}
 	let hover = $state(false);
 	let fullStretch = $derived(barState.id == id);
+	let addedDelay = $state(0);
 	function handleEnter(e: any) {
 		if (e.key === 'Enter' && !barState.isAnimating) {
 			barState.id = id;
@@ -59,6 +60,11 @@
 		onpointerleave={() => (hover = false)}
 		onclick={() => {
 			if (!barState.isAnimating) {
+				if(barState.id >= 0){
+					addedDelay = 300;
+				} else {
+					addedDelay = 0;
+				}
 				barState.id = id;
 			}
 		}}
@@ -121,7 +127,8 @@ Transitions only happen on creation/destruction of components
 {#if fullStretch}
 	<rect
 		class={isDesktop ? '' : 'hidden'}
-		transition:ribbonOut={{ duration: 200, dist: 1000 }}
+		in:ribbonOut={{ duration: 400, dist: 1000, delay: addedDelay }}
+		out:ribbonOut={{duration: 400, dist:1000, delay: 300}}
 		y={tabHeight}
 		x={xRectOffset}
 		transform="skewX({skew})"

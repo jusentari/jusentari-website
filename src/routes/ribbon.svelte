@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { circIn } from 'svelte/easing';
+	import { circIn, expoIn } from 'svelte/easing';
 	import { barState, colors } from '../state.svelte.js';
+	import { infoExpandDelay, infoExpandDur, infoContractDur, infoContractDelay } from '../anim-params.svelte.js'
 	import { fade } from 'svelte/transition';
 	let { xOffset, ribbonWidth, ribbonHeight } = $props();
 	let id = $derived(barState.id);
@@ -12,8 +13,20 @@
 		return {
 			delay: params.delay || 0,
 			duration: params.duration || 4000,
-			easing: circIn,
+			easing: expoIn,
 			css: (t: number, u: number) => `max-height: ${t * ribbonHeight}px;`
+		};
+	}
+
+	function ribbonOut(
+		_node: SVGElement,
+		params: { delay?: number; duration?: number; easing?: (t: number) => number; dist: number }
+	) {
+		return {
+			delay: params.delay || 0,
+			duration: params.duration || 4000,
+			easing: expoIn,
+			css: (t: number) => `bottom: ${(1-t) * params.dist}px;`
 		};
 	}
 	let screenWidth = $state(0);
@@ -53,9 +66,9 @@
 		style="overflow: hidden; position: absolute; bottom: 0px; margin-left: {xOffset}px; width: {ribbonWidth}px; height: {ribbonHeight}px; color: #ddd; background-color: {colors[
 			id
 		]}"
-		in:ribbonIn={{ delay: 700, duration: 500 }}
-		out:ribbonIn={{ delay: 0, duration: 500 }}
-
+		in:ribbonIn={{ delay: infoExpandDelay, duration: infoExpandDur }}
+		out:ribbonOut={{ delay: isDesktop ? infoContractDelay : 0, duration: infoContractDur, dist: ribbonHeight }}
+		onintroend={() => (barState.isAnimating = false)}
 	>
 		{#if id >= 0}
 			<svg viewBox="0 0 {ribbonWidth} 50">
@@ -81,7 +94,7 @@
 				>
 				</rect>
 				<polygon
-					points="0,0 40,0 20,10"
+					points="0,10 40,10 20,0"
 					fill="#000"
 					class="ribbonClose {barState.id >= 0 ? '' : 'hidden'}"
 					transform="translate({ribbonWidth / 2 - 20},10)"

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { circIn } from 'svelte/easing';
+	import { circIn, expoIn } from 'svelte/easing';
+	import { ribbonExpandDelay, ribbonExpandDur, ribbonContractDur, ribbonContractDelay } from '../anim-params.svelte.js'
 	import { barState, colors } from '../state.svelte';
 	let { id, tabHeight, tabRatio } = $props();
 	let screenWidth: number = $state(0);
@@ -27,6 +28,17 @@
 		return 1 / (t + 0.00001);
 	}*/
 	$inspect(xRectOffset);
+	function ribbonIn(
+		_node: SVGElement,
+		params: { delay?: number; duration?: number; easing?: (t: number) => number; dist: number }
+	) {
+		return {
+			delay: params.delay || 0,
+			duration: params.duration || 4000,
+			easing: expoIn,
+			css: (t: number) => `height: ${t * params.dist}px;`
+		};
+	}
 	function ribbonOut(
 		_node: SVGElement,
 		params: { delay?: number; duration?: number; easing?: (t: number) => number; dist: number }
@@ -34,8 +46,11 @@
 		return {
 			delay: params.delay || 0,
 			duration: params.duration || 4000,
-			easing: circIn,
-			css: (t: number) => `height: ${t * params.dist}px;`
+			easing: expoIn,
+			css: (_t: number, u: number) => {
+				const skewRads = skew * 2 * Math.PI/360;
+				return `y: ${tabHeight + (u * params.dist * Math.cos(skewRads))}px;`;
+			},
 		};
 	}
 	let hover = $state(false);
@@ -61,7 +76,7 @@
 		onclick={() => {
 			if (!barState.isAnimating) {
 				if(barState.id >= 0){
-					addedDelay = 300;
+					addedDelay = ribbonExpandDelay;
 				} else {
 					addedDelay = 0;
 				}
@@ -114,7 +129,7 @@ Transitions only happen on creation/destruction of components
 {#if hover}
 	<rect
 		class={isDesktop ? '' : 'hidden'}
-		transition:ribbonOut={{ duration: 100, dist: 50 }}
+		transition:ribbonIn={{ duration: 100, dist: 50 }}
 		y={tabHeight}
 		x={xRectOffset}
 		transform="skewX({skew})"
@@ -127,10 +142,10 @@ Transitions only happen on creation/destruction of components
 {#if fullStretch}
 	<rect
 		class={isDesktop ? '' : 'hidden'}
-		in:ribbonOut={{ duration: 400, dist: 1000, delay: addedDelay }}
-		out:ribbonOut={{duration: 400, dist:1000, delay: 300}}
-		y={tabHeight}
-		x={xRectOffset}
+		in:ribbonIn={{ duration: ribbonExpandDur, dist: screenHeight - tabHeight, delay: addedDelay }}
+		out:ribbonOut={{duration: ribbonContractDur, dist: screenHeight - tabHeight, delay: ribbonContractDelay}}
+		x="{xRectOffset}px"
+		y="{tabHeight}px"
 		transform="skewX({skew})"
 		width={tabPixelSize}
 		height={screenHeight - tabHeight}

@@ -89,12 +89,12 @@
 		on just the bootloader part (pre-GRUB)
 
 		<br />
-		<img src="one-pixel/Boot_order_allwinner_nezha_grub.png" />(<a
+		<img src="one-pixel/Boot_order_allwinner_nezha_grub.png" alt="diagram of the boot sequence of the Allwinner D1"/>(<a
 			href="https://fedoraproject.org/wiki/Architectures/RISC-V/Allwinner">source</a
 		>)
 		<br />
 		when building the OpenSBI repo, i hit this error:
-		<img src="one-pixel/opensbi_error.png" />
+		<img src="one-pixel/opensbi_error.png" alt="Error: unrecognized opcode 'fence.i', extension 'zifencei' required"/>
 		which i fixed by adding "_zifencei" to a line in the Makefile (found out where to do this because
 		of
 		<a
@@ -103,18 +103,18 @@
 			href="https://www.sifive.com/blog/all-aboard-part-1-compiler-args">this insightful series</a
 		>
 		from sifive):
-		<img src="one-pixel/zifencei.png" />
+		<img src="one-pixel/zifencei.png" alt="added _zifencei to the riscv toolchain"/>
 		MMC Controller Host Support" is under "Device Drivers" in the menu config (also make sure your actual
 		terminal is large enough to run menuconfig)<br />
 		when building u-boot i ran into a few issues, the first one was this version error:
-		<img src="one-pixel/version_error.png" />
+		<img src="one-pixel/version_error.png" alt="Invalid version: 'u-boot-2022.01"/>
 		which i had to remove a line in u-boot/scripts/dtc/pylibfdt/Makefile to make sure the version numbers
 		were compatible
-		<img src="one-pixel/python_version_fix.png" />
+		<img src="one-pixel/python_version_fix.png" alt="VERSION=&quot;$(UBOOTVERSION)&quot;"/>
 		the second one was this error:
-		<img src="one-pixel/zicsr_error.png" />
+		<img src="one-pixel/zicsr_error.png" alt="Error: unrecognized opcode 'csrs sstatus,a5', extension 'zicsr' required"/>
 		which i fixed by adding "_zifencei_zicsr" to a line in u-boot/arch/riscv/Makefile:
-		<img src="one-pixel/zicsr_fix.png" />
+		<img src="one-pixel/zicsr_fix.png" alt="added _zicsr to the riscv ARCH_FLAGS"/>
 
 		at this point, i had a machine that would... start up and not do anything. the main trick
 		though, was that if i gave this bootloader the same boot commands and linux kernel as the
@@ -133,7 +133,7 @@
 		<br />
 		they are pins GPIO 32 (TX) and GPIO 33 (RX)
 		<br />
-		<img src="one-pixel/uconsole_mini_pcie.png" />(<a
+		<img src="one-pixel/uconsole_mini_pcie.png" alt="diagram of the uconsole mPCI adapter, GPIO 32 & GPIO 33 are present"/>(<a
 			href="https://github.com/clockworkpi/DevTerm/blob/main/Schematics/clockwork_Mainboard_V3.14_Schematic.pdf"
 			>source</a
 		>)
@@ -165,7 +165,7 @@
 		<br />
 		that gave me this
 		<br />
-		<img src="one-pixel/hello_world.png" />
+		<img src="one-pixel/hello_world.png" alt="screenshot of serial output with the phrase &quot;hello world :)&quot;"/>
 		<br />
 		(although i don't know why the executable is so large)
 	</p>
@@ -183,7 +183,7 @@
 		<br />
 		THIS BEAUTIFUL CREATION is my serial communicator.
 		<br />
-		<img src="one-pixel/ratchet.webp" />
+		<img src="one-pixel/ratchet.webp" alt="mPCI adapter with wires loosely soldered onto lead wires into a USB-UART adapter"/>
 		<br />
 		weep your tears of ecstacy
 		<br />
@@ -204,7 +204,7 @@
 		now that i had a shell with u-boot, i could start interacting with the computer a little bit
 		more. i saw this entry in the device tree from that patch and got interested...
 		<br />
-		<img src="one-pixel/backlight.png" />
+		<img src="one-pixel/backlight.png" alt="screenshot of the device tree entry with ocp817_backlight highlighted. there is a mention of a PD20 pin which is what caught my attention"/>
 		<br />
 		this is from the clockwork r01 patch, in the device tree file. there is a gpio pin referenced there,
 		PD20, which i could fortunately control with u-boot. i typed in <code>gpio set PD20</code> and like
@@ -246,7 +246,7 @@
 	</p>
 	<h2>2024-10-20 update: the pixel!</h2>
 	<p>
-		<img src="one-pixel/pixel.jpg" />
+		<img src="one-pixel/pixel.jpg" alt="the pixel!"/>
 		huge props to <a href="https://forum.clockworkpi.com/u/ylyamin">ylyamin</a> on the clockwork forums!
 	</p>
 </div>

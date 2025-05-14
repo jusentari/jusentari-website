@@ -1,4 +1,4 @@
-<div style="text-align: center; max-width: 600px; margin: auto" class="h-entry">
+<div style="text-align: center; max-width: 600px; margin: auto; margin-bottom: 20px" class="h-entry">
 	<h1>one pixel</h1>
 	<p>
 		<img src="one-pixel/uconsole.jpg" alt="as you can see, no pixels here" />

@@ -1,9 +1,10 @@
-export const ribbonExpandDur = 500;
-export const infoExpandDelay = ribbonExpandDur + 400;
-export const infoExpandDur = 300;
-export const infoContractDur = infoExpandDur;
-export const ribbonContractDur = ribbonExpandDur;
-export const infoContractDelay = ribbonContractDur + 200;
-export const ribbonContractDelay = 0;
-export const ribbonExpandDelay = 200;
+export const timings = $state({
+    infoContractDelay: 350,
+    infoExpandDelay: 700,
+    ribbonExpandDur: 500,
+    infoExpandDur: 300,
+    infoContractDur: 300,
+    ribbonContractDur: 300,
+    ribbonContractDelay: 0,
+    ribbonExpandDelay: 0});
 

@@ -1,37 +1,42 @@
 <script lang="ts">
 	import { circIn, expoIn } from 'svelte/easing';
 	import { barState, colors } from '../state.svelte.js';
-	import { infoExpandDelay, infoExpandDur, infoContractDur, infoContractDelay } from '../anim-params.svelte.js'
+	import { timings } from '../anim-params.svelte.js';
 	import { fade } from 'svelte/transition';
-	let { xOffset, ribbonWidth, ribbonHeight } = $props();
+	let { xOffset, ribbonWidth, ribbonHeight, tabRatio, tabHeight, realSkew } = $props();
 	let id = $derived(barState.id);
 	$inspect(barState);
 	function ribbonIn(
 		_node: any,
-		params: { delay?: number; duration?: number; easing?: (t: number) => number }
-	) {
-		return {
-			delay: params.delay || 0,
-			duration: params.duration || 4000,
-			easing: expoIn,
-			css: (t: number, u: number) => `max-height: ${t * ribbonHeight}px;`
-		};
-	}
-
-	function ribbonOut(
-		_node: SVGElement,
 		params: { delay?: number; duration?: number; easing?: (t: number) => number; dist: number }
 	) {
 		return {
 			delay: params.delay || 0,
 			duration: params.duration || 4000,
 			easing: expoIn,
-			css: (t: number) => `bottom: ${(1-t) * params.dist}px;`
+			css: (t: number) => `height: ${screenHeight * t}px;`
+		};
+	}
+
+	function ribbonOut(
+		_node: any,
+		params: { delay?: number; duration?: number; easing?: (t: number) => number; dist: number }
+	) {
+		return {
+			delay: params.delay || 0,
+			duration: params.duration || 4000,
+			easing: expoIn,
+			css: (t: number, u: number) => `y: -${calculatedRibbonHeight * t}px;`
 		};
 	}
 	let screenWidth = $state(0);
 
+	let skew = $derived(realSkew); //$derived(Math.atan((ribbonWidth * tabRatio) / tabHeight) * (-180 / Math.PI));
+	$inspect(skew);
 	let screenHeight = $state(0);
+	$inspect(screenHeight);
+	let calculatedRibbonHeight = $derived(850 + tabHeight);
+	$inspect(calculatedRibbonHeight);
 	let isDesktop = $derived(screenWidth >= 768);
 	function handleEnter(e: any) {
 		if (e.key === 'Enter' && !barState.isAnimating) {
@@ -60,62 +65,63 @@
 </script>
 
 <svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight} />
-{#key id}
-	<div
-		class="ribbonInfo"
-		style="overflow: hidden; position: absolute; bottom: 0px; margin-left: {xOffset}px; width: {ribbonWidth}px; height: {ribbonHeight}px; color: #ddd; background-color: {colors[
-			id
-		]}"
-		in:ribbonIn={{ delay: infoExpandDelay, duration: infoExpandDur }}
-		out:ribbonOut={{ delay: isDesktop ? infoContractDelay : 0, duration: infoContractDur, dist: ribbonHeight }}
-		onintroend={() => (barState.isAnimating = false)}
-	>
-		{#if id >= 0}
-			<svg viewBox="0 0 {ribbonWidth} 50">
-				<rect
-					x="0"
-					y="0"
-					width={ribbonWidth}
-					height="30"
-					class="ribbonClose"
-					onpointerenter={() => (hover = true)}
-					onpointerleave={() => (hover = false)}
-					onclick={() => {
-						if (!barState.isAnimating) {
-							barState.id = -1;
-						}
-					}}
-					onfocusin={() => (hover = true)}
-					onfocusout={() => (hover = false)}
-					onkeydown={handleEnter}
-					role="button"
-					tabindex="0"
-					fill={colors[id]}
-				>
-				</rect>
-				<polygon
-					points="0,10 40,10 20,0"
-					fill="#000"
-					class="ribbonClose {barState.id >= 0 ? '' : 'hidden'}"
-					transform="translate({ribbonWidth / 2 - 20},10)"
-				>
-				</polygon>
-			</svg>
-		{/if}
-		{@html ribbonHTML[barState.id]}
-	</div>
-<!--	<div
-		class={id >= 0 ? '' : 'hidden'}
-		style="background-color: #222; position: absolute; left: {xOffset}px; top: 100px; height: 0px; width: {ribbonWidth}px; z-index: 1"
-		in:ribbonIn={{ delay: 700, duration: 500 }}
-		out:ribbonIn={{ delay: 0, duration: 500 }}
-		onintroend={() => (barState.isAnimating = false)}
-	></div>-->
-{/key}
+
+<svg viewBox="0 0 {screenWidth} {screenHeight - tabHeight}">
+	{#key id}
+		<rect
+			in:ribbonIn={{
+				duration: timings.infoExpandDur,
+				dist: screenHeight - tabHeight,
+				delay: timings.infoExpandDelay
+			}}
+			out:ribbonOut={{
+				duration: timings.infoContractDur,
+				dist: screenHeight - tabHeight,
+				delay: timings.infoContractDelay
+			}}
+			y={-calculatedRibbonHeight}
+			class="fullRibbon ribbonSkew"
+			style:--tab-width="{ribbonWidth}px"
+			style:--skew="{skew}deg"
+			height={calculatedRibbonHeight}
+			width={ribbonWidth}
+			x={200}
+			fill-opacity={id >= 0 ? '1' : '0'}
+			fill={colors[id]}
+			tabindex={0}
+			role="button"
+		>
+		</rect>
+
+		<polygon points="10,0 20,10 0,10" transform="translate(275, 10)" fill-opacity={id >= 0 ? '1' : '0'}> </polygon>
+		<rect
+			height={30}
+			width={ribbonWidth}
+			x={200}
+			class="ribbonClose"
+			fill-opacity="0"
+			onpointerenter={() => (hover = true)}
+			onpointerout={() => (hover = false)}
+			onclick={() => {
+				barState.id = -1;
+			}}
+			onfocusin={() => (hover = true)}
+			onfocusout={() => (hover = false)}
+			onkeydown={handleEnter}
+			role="button"
+			tabindex="0"
+		>
+		</rect>
+	{/key}
+	{@html ribbonHTML[barState.id]}
+</svg>
 
 <style>
 	.hidden {
 		display: none;
+	}
+	.ribbonSkew {
+		transform: skewX(var(--skew)) scaleY(-1);
 	}
 	.ribbonClose:hover {
 		cursor: pointer;
@@ -124,5 +130,21 @@
 		padding-left: 10px;
 		padding-right: 10px;
 		line-height: 2;
+	}
+
+	@media (max-width: 500px) {
+		.ribbonInfo {
+			font-size: 16px;
+		}
+	}
+	@media (min-width: 500px) {
+		.ribbonInfo {
+			font-size: 16px;
+		}
+	}
+	@media (min-width: 1500px) {
+		.ribbonInfo {
+			font-size: 24px;
+		}
 	}
 </style>

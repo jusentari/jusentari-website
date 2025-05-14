@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { circIn, expoIn } from 'svelte/easing';
-	import { ribbonExpandDelay, ribbonExpandDur, ribbonContractDur, ribbonContractDelay } from '../anim-params.svelte.js'
+	import { circIn, expoIn, quadIn, quadOut } from 'svelte/easing';
+	import { timings } from '../anim-params.svelte.js';
 	import { barState, colors } from '../state.svelte';
-	let { id, tabHeight, tabRatio } = $props();
+	let { id, tabHeight, tabRatio, realSkew } = $props();
 	let screenWidth: number = $state(0);
 
 	let screenHeight: number = $state(0);
 	let isDesktop = $derived(screenWidth >= 768);
 	let tabPercentageSize: number = $derived(isDesktop ? 0.12 : 0.27);
 	let tabPixelSize: number = $derived(screenWidth * tabPercentageSize);
-	let xOffset = $derived(screenWidth - tabPixelSize * (id + 1));
-	let xFontOffset = $derived(xOffset + tabPixelSize * 0.3);
-	let xRectOffset = $derived(xOffset - tabPixelSize * (1 / tabRatio - 1) * tabRatio + tabPixelSize);
-	let tabNames: string[] = ['social', 'music', 'games', 'code'];
+	let xOffset = $derived(screenWidth - (tabPixelSize * (id + 1)) + (Math.tan(-realSkew*2*Math.PI/360) * tabHeight));
+	let xFontOffset = $derived(xOffset + 20);
+	let xRectOffset = $derived(xOffset); //$derived(xOffset - tabPixelSize * (1 / tabRatio - 1) * tabRatio + tabPixelSize);
+	let tabNames: string[] = ['/scl', '/mus', '/gme', '/cde'];
 	//const tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
-	let skew = $derived(Math.atan((tabPixelSize * tabRatio) / tabHeight) * (-180 / Math.PI));
+	let skew = $derived(realSkew); //$derived(Math.atan((tabPixelSize * tabRatio) / tabHeight) * (-180 / Math.PI));
 	let fontSize = $derived(
 		screenWidth >= 1250
 			? '32px'
@@ -22,7 +22,7 @@
 				? '28px'
 				: screenWidth >= 768
 					? '24px'
-					: '16px'
+					: '32px'
 	);
 	/*function bezier(t: number) {
 		return 1 / (t + 0.00001);
@@ -48,9 +48,9 @@
 			duration: params.duration || 4000,
 			easing: expoIn,
 			css: (_t: number, u: number) => {
-				const skewRads = skew * 2 * Math.PI/360;
-				return `y: ${tabHeight + (u * params.dist * Math.cos(skewRads))}px;`;
-			},
+				const skewRads = (skew * 2 * Math.PI) / 360;
+				return `y: ${tabHeight + u * params.dist * Math.cos(skewRads)}px;`;
+			}
 		};
 	}
 	let hover = $state(false);
@@ -66,7 +66,7 @@
 <svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight} />
 {#if isDesktop}
 	<rect
-		class="barPolygon"
+		class="barText"
 		style:--tab-width="{tabPixelSize}px"
 		style:--xOffset="{xRectOffset}px"
 		style:--full-width="{screenWidth}px"
@@ -75,8 +75,8 @@
 		onpointerleave={() => (hover = false)}
 		onclick={() => {
 			if (!barState.isAnimating) {
-				if(barState.id >= 0){
-					addedDelay = ribbonExpandDelay;
+				if (barState.id >= 0) {
+					addedDelay = timings.ribbonExpandDelay;
 				} else {
 					addedDelay = 0;
 				}
@@ -98,6 +98,7 @@
 {:else}
 	<rect
 		id="bar{id}"
+		class="barText"
 		style:--tab-width="{tabPixelSize}px"
 		style:--xOffset="{xRectOffset}px"
 		style:--full-width="{screenWidth}px"
@@ -118,7 +119,7 @@
 		fill={colors[id]}
 		class:mobileBarFull={barState.id == id}
 		class:barMobile={barState.id != id}
-		tabindex=0
+		tabindex="0"
 		role="button"
 	>
 	</rect>
@@ -142,8 +143,12 @@ Transitions only happen on creation/destruction of components
 {#if fullStretch}
 	<rect
 		class={isDesktop ? '' : 'hidden'}
-		in:ribbonIn={{ duration: ribbonExpandDur, dist: screenHeight - tabHeight, delay: addedDelay }}
-		out:ribbonOut={{duration: ribbonContractDur, dist: screenHeight - tabHeight, delay: ribbonContractDelay}}
+		in:ribbonIn={{ duration: timings.ribbonExpandDur, dist: screenHeight - tabHeight, delay: addedDelay }}
+		out:ribbonOut={{
+			duration: timings.ribbonContractDur,
+			dist: screenHeight - tabHeight,
+			delay: timings.ribbonContractDelay
+		}}
 		x="{xRectOffset}px"
 		y="{tabHeight}px"
 		transform="skewX({skew})"
@@ -154,11 +159,10 @@ Transitions only happen on creation/destruction of components
 	</rect>
 {/if}
 <text
-	class="tabText"
+	class="barText"
 	fill={colors[6]}
 	y={tabHeight * 0.6}
 	x={xFontOffset}
-	font-size={fontSize}
 	pointer-events="none"
 >
 	{tabNames[id]}
@@ -171,17 +175,50 @@ Transitions only happen on creation/destruction of components
 	.barPolygon {
 		cursor: pointer;
 	}
+	.barText {
+		cursor: pointer;
+		font-size: 32px;
+	}
+	@media (max-width: 500px) {
+		.barText {
+			font-size: 16px;
+		}
+	}
+	@media (min-width: 500px) {
+		.barText {
+			font-size: 24px;
+		}
+	}
+	@media (min-width: 768px) {
+		.barText {
+			font-size: 16px;
+		}
+	}
+	@media (min-width: 1050px) {
+		.barText {
+			font-size: 28px;
+		}
+	}
+	@media (min-width: 1250px) {
+		.barText {
+			font-size: 36px;
+		}
+	}
 
 	.barMobile {
 		cursor: pointer;
 		width: var(--tab-width);
 		transform: skewX(var(--skew)) translateX(var(--xOffset));
-		transition: width 1s, transform 1s;
+		transition:
+			width 1s,
+			transform 1s;
 	}
 
 	.mobileBarFull {
 		transform: skewX(0) translateX(0px);
 		width: var(--full-width);
-		transition: width 1s, transform 1s;
+		transition:
+			width 1s,
+			transform 1s;
 	}
 </style>

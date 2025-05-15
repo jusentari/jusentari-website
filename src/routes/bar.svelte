@@ -12,7 +12,7 @@
 	let xOffset = $derived(screenWidth - (tabPixelSize * (id + 1)) + (Math.tan(-realSkew*2*Math.PI/360) * tabHeight));
 	let xFontOffset = $derived(xOffset + 20);
 	let xRectOffset = $derived(xOffset); //$derived(xOffset - tabPixelSize * (1 / tabRatio - 1) * tabRatio + tabPixelSize);
-	let tabNames: string[] = ['/scl', '/mus', '/gme', '/cde'];
+	let tabNames: string[] = ['/jusentari/scl', '/jusentari/mus', '/jusentari/gme', '/jusentari/cde', '/criaring'];
 	//const tabShortNames: string[] = ['soc', 'mus', 'gme', 'cde'];
 	let skew = $derived(realSkew); //$derived(Math.atan((tabPixelSize * tabRatio) / tabHeight) * (-180 / Math.PI));
 	let fontSize = $derived(
@@ -64,109 +64,6 @@
 </script>
 
 <svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight} />
-{#if isDesktop}
-	<rect
-		class="barText"
-		style:--tab-width="{tabPixelSize}px"
-		style:--xOffset="{xRectOffset}px"
-		style:--full-width="{screenWidth}px"
-		style:--skew="{skew}deg"
-		onpointerenter={() => (hover = true)}
-		onpointerleave={() => (hover = false)}
-		onclick={() => {
-			if (!barState.isAnimating) {
-				if (barState.id >= 0) {
-					addedDelay = timings.ribbonExpandDelay;
-				} else {
-					addedDelay = 0;
-				}
-				barState.id = id;
-			}
-		}}
-		onfocusin={() => (hover = true)}
-		onfocusout={() => (hover = false)}
-		onkeydown={handleEnter}
-		width={tabPixelSize}
-		height={tabHeight}
-		x={xRectOffset}
-		transform="skewX({skew})"
-		fill={colors[id]}
-		tabindex={0}
-		role="button"
-	>
-	</rect>
-{:else}
-	<rect
-		id="bar{id}"
-		class="barText"
-		style:--tab-width="{tabPixelSize}px"
-		style:--xOffset="{xRectOffset}px"
-		style:--full-width="{screenWidth}px"
-		style:--skew="{skew}deg"
-		onpointerenter={() => (hover = true)}
-		onpointerleave={() => (hover = false)}
-		onclick={() => {
-			if (!barState.isAnimating) {
-				barState.id = id;
-				barState.isAnimating = true;
-			}
-		}}
-		onfocusin={() => (hover = true)}
-		onfocusout={() => (hover = false)}
-		onkeydown={handleEnter}
-		width={tabPixelSize}
-		height={tabHeight}
-		fill={colors[id]}
-		class:mobileBarFull={barState.id == id}
-		class:barMobile={barState.id != id}
-		tabindex="0"
-		role="button"
-	>
-	</rect>
-{/if}
-<!--
-Transitions only happen on creation/destruction of components
--->
-{#if hover}
-	<rect
-		class={isDesktop ? '' : 'hidden'}
-		transition:ribbonIn={{ duration: 100, dist: 50 }}
-		y={tabHeight}
-		x={xRectOffset}
-		transform="skewX({skew})"
-		width={tabPixelSize}
-		height="50"
-		fill={colors[id]}
-	>
-	</rect>
-{/if}
-{#if fullStretch}
-	<rect
-		class={isDesktop ? '' : 'hidden'}
-		in:ribbonIn={{ duration: timings.ribbonExpandDur, dist: screenHeight - tabHeight, delay: addedDelay }}
-		out:ribbonOut={{
-			duration: timings.ribbonContractDur,
-			dist: screenHeight - tabHeight,
-			delay: timings.ribbonContractDelay
-		}}
-		x="{xRectOffset}px"
-		y="{tabHeight}px"
-		transform="skewX({skew})"
-		width={tabPixelSize}
-		height={screenHeight - tabHeight}
-		fill={colors[id]}
-	>
-	</rect>
-{/if}
-<text
-	class="barText"
-	fill={colors[6]}
-	y={tabHeight * 0.6}
-	x={xFontOffset}
-	pointer-events="none"
->
-	{tabNames[id]}
-</text>
 
 <style>
 	.hidden {

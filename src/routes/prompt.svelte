@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { typewriter } from '../typewriter.js';
 	import { barState } from '../state.svelte.js';
-	let consoleBaseText: string = '> cd /home/jusentari/';
-	const tabShortNames = ['soc', 'mus', 'gme', 'cde'];
+	let consoleBaseText: string = '> cd /home';
+
+	let tabShortNames: string[] = ['/jusentari/scl', '/jusentari/mus', '/jusentari/gme', '/jusentari/cde', '/criaring'];
 	let consoleText: string = $derived.by(() => {
 		if (barState.id >= 0) {
 			return consoleBaseText + tabShortNames[barState.id];
@@ -23,6 +23,43 @@
 			if (page > -1) barState.id = page;
 		}
 	}
+
+let oldText = '> cd /home';
+function typewriter(node, { speed = 100, origin = '', dest = '' }) {
+	let mismatchFound = false
+	let index = 0;
+	var length = Math.max(origin.length, dest.length);
+	while (!mismatchFound) {
+		index++;
+		mismatchFound = origin.charAt(index).localeCompare(dest.charAt(index)) !== 0 || index > length;
+	}
+	const numberToErase = origin.length - index;
+	const numberToAdd = dest.length - index;
+	const intermediateStrings = [];
+	for (let i = 1; i <= numberToErase; i++) {
+		intermediateStrings.push(origin.substring(0, origin.length - i));
+	}
+	for (let i = numberToAdd; i >= 0; i--) {
+		intermediateStrings.push(dest.substring(0, dest.length - i));
+	}
+	const totalChars = numberToAdd + numberToErase;
+	origin = dest;
+
+	const duration = Math.max(totalChars * speed, 1);
+	return {
+		duration,
+		tick: (t) => {
+			const i = Math.trunc(totalChars * t);
+			if(intermediateStrings.length > 0){
+				consoleValue = intermediateStrings[i];
+				node.value = intermediateStrings[i];
+			} else {
+				consoleValue = dest;
+				node.value = dest;
+			}
+		}
+	};
+}
 	$inspect(consoleText);
 </script>
 
@@ -60,10 +97,11 @@
 		background-color: var(--background-color, #000);
 		color: var(--color, #fff);
 		border: none;
+		padding-top: 20px;
+		padding-bottom: 20px;
+		display: block;
+		width: 100%;
 		outline: none;
-		position: absolute;
-		height: 98px;
-		width: 50%;
 		z-index: 10;
 	}
 </style>

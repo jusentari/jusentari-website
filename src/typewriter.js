@@ -1,4 +1,4 @@
-export let oldText = '> cd /home/jusentari/';
+export let oldText = '> cd /home';
 export function typewriter(node, { speed = 100, origin = '', dest = '' }) {
 	let mismatchFound = false
 	let index = 0;

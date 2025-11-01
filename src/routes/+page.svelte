@@ -19,23 +19,6 @@
 	let screenHeight = $state(0);
 	let isDesktop = $derived(screenWidth >= 768);
 	let tabIds = [0, 1, 2, 3, 4];
-/*$derived.by(() => {
-		if (isDesktop) {
-			return [4, 3, 2, 1, 0];
-		} else {
-			return [4, 3, 2, 1, 0].sort((a, b) => (a == barState.id ? 999 : b - a));
-		}
-	});
-*/
-let tabRatio = $state(0.28);
-	let realSkew = -28;
-	let tabHeight = 100;
-	let tabPercentageSize = $derived(isDesktop ? 0.12 : 0.275);
-	let tabPixelSize = $derived(screenWidth * tabPercentageSize);
-
-	const ribbonXOffset = 0;
-	const ribbonWidth = 150;
-	let ribbonHeight = $derived(screenHeight - tabHeight);
 
 	const info = [
 		`
@@ -58,8 +41,9 @@ let tabRatio = $state(0.28);
 		`
 		<a>code</a><br />
 		<a href="https://codeberg.org/jusentari/pozm">pozm</a>: a 16-bit CPU architecture w/ a WIP emulator<br>
-		<a href="/one-pixel">one pixel</a>: a blog post about the uConsole and low level RISC-V
+		<a href="https://jusentari.com/one-pixel.html">one pixel</a>: a blog post about the uConsole and low level RISC-V
 		development<br />
+		<a href="https://jusentari.com/nds-badge.html">badge editor</a>: an editor that allows you to put images on an NDS<br />
 		<a href="https://github.com/jusentari/AlpacOS">alpacos</a>: a WIP kernel written for x86
 		initially but I'm trying to bring it to RISC-V<br />
 		<a href="https://github.com/jusentari/nds-badge">nds badge</a>: a "game" written with ndslib for
@@ -68,7 +52,7 @@ let tabRatio = $state(0.28);
 		2024<br />
 		<a href="https://github.com/jusentari/jusentari-website">this website</a>: :)<br />
 	`,
-`
+		`
 <span style="color: #222">criaring webring</span><br>
 <webring-css></webring-css>
 `
@@ -81,9 +65,11 @@ let tabRatio = $state(0.28);
 <svelte:window bind:innerWidth={screenWidth} bind:innerHeight={screenHeight} />
 <div style="color: #ddd; z-index: 2; margin: 50px">
 	<div style="display: flexbox; align-items: flex-end;">
-		<img src="me.jpg" alt="me (alpaca)" height="100px" style="float: left; margin-right: 10px;"/>
-		<div style="display: flexbox; align-content: flex-end; height: 100px">
-			hi! my name is cedar, welcome to my website! :)
+		<img class="pfp" src="pacnew.png" alt="me (alpaca)" />
+		<div class="title-font" style="">
+			hi! my name is cedar, welcome to my website!<br />
+			i'm a software dev in the pnw<br />
+			here are my projects & ways to contact me :)<br />
 		</div>
 	</div>
 	<Prompt --color={'#ffb000'} --background-color={'#000'} />
@@ -97,6 +83,7 @@ let tabRatio = $state(0.28);
 		</div>
 	{/each}
 </div>
+
 <style>
 	:global(*) {
 		font-family: 'Terminal';
@@ -107,7 +94,81 @@ let tabRatio = $state(0.28);
 		src: url('/TerminessNerdFontMono-Regular.ttf') format('truetype');
 	}
 
+	.pfp {
+		height: 300px;
+		float: left;
+		margin-right: 10px;
+		transform: translateX(-15px);
+	}
+	.title-font {
+		font-size: 48px;
+		display: flexbox;
+		align-content: flex-end;
+		height: 200px;
+	}
 	.section {
+		font-size: 32px;
 		padding: 30px;
+	}
+	@media (max-width: 2000px) {
+		.title-font {
+			font-size: 32px;
+			height: 200px;
+		}
+		.section {
+			font-size: 24px;
+			padding: 30px;
+		}
+		.pfp {
+			height: 250px;
+			float: left;
+			margin-right: 10px;
+		}
+	}
+	@media (max-width: 1500px) {
+		.title-font {
+			font-size: 24px;
+			height: 100px;
+		}
+		.section {
+			font-size: 18px;
+			padding: 30px;
+		}
+		.pfp {
+			height: 250px;
+			float: left;
+			margin-right: 10px;
+		}
+	}
+	@media (max-width: 768px) {
+		.title-font {
+			font-size: 18px;
+			height: 100px;
+		}
+		.section {
+			font-size: 12px;
+			padding: 30px;
+		}
+		.pfp {
+			height: 150px;
+			float: left;
+			margin-right: 10px;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.title-font {
+			font-size: 12px;
+			height: 100px;
+		}
+		.section {
+			font-size: 12px;
+			padding: 30px;
+		}
+		.pfp {
+			height: 150px;
+			float: left;
+			margin-right: 10px;
+		}
 	}
 </style>

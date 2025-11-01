@@ -1,6 +1,32 @@
 <!doctype html>
 <html lang="en">
 	<head>
+<style>
+	:global(*) {
+		font-family: 'Terminal';
+	}
+
+	@font-face {
+		font-family: 'Terminal';
+		src: url('/TerminessNerdFontMono-Regular.ttf') format('truetype');
+	}
+
+	.title {
+		font-size: 24px;
+		display: flexbox;
+		align-content: flex-end;
+		height: 100px;
+	}
+	@media (max-width: 768px){
+		.title {
+			font-size: 18px;
+		}
+	}
+
+	.section {
+		padding: 30px;
+	}
+</style>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
